@@ -63,6 +63,21 @@ GET /api/calendar?year=2026&type=all&lang=fr
 - `weekly` : `true` pour ajouter les jeûnes hebdomadaires mercredi/vendredi.
 - `monthly` : `true` pour ajouter les commémorations mensuelles de saints.
 
+## Déploiement
+
+Déploiement **zéro configuration** sur Vercel (Next.js). Voir
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). En résumé :
+
+```bash
+# Option CLI
+npx vercel login && npx vercel --prod
+
+# Option GitHub (déploiement continu)
+git push -u origin main   # puis « Import Project » sur vercel.com
+```
+
+Le dépôt est déjà initialisé et committé, prêt à être poussé.
+
 ## Ajouter le calendrier dans Google Calendar
 
 1. Déployez l'application (ou exposez `localhost` via une URL publique).
@@ -94,6 +109,7 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) pour le détail.
 | [ETHIOPIAN_TO_GREGORIAN_CONVERSION](docs/ETHIOPIAN_TO_GREGORIAN_CONVERSION.md) | Algorithme de conversion |
 | [ORTHODOX_RITES](docs/ORTHODOX_RITES.md) | Fêtes, jeûnes, commémorations |
 | [ICS_SPEC](docs/ICS_SPEC.md) | Choix iCalendar / Google Calendar |
+| [DEPLOYMENT](docs/DEPLOYMENT.md) | Déploiement Vercel + URLs publiques |
 | [DATA_MODEL](docs/DATA_MODEL.md) | Modèle de données typé |
 | [TESTING_STRATEGY](docs/TESTING_STRATEGY.md) | Stratégie et cas limites |
 | [MCP_SETUP](docs/MCP_SETUP.md) | Serveurs MCP recommandés |
