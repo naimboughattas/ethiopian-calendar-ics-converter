@@ -25,10 +25,11 @@ export function resolveEndExclusive(
     const { month, day } = def.endEthiopianDate;
     // La date de fin peut tomber dans l'année grégorienne du début ou la
     // suivante (jeûne à cheval sur le Nouvel An grégorien). On choisit la
-    // première résolution postérieure ou égale au début.
-    const candidates = [gregorianYear, gregorianYear + 1].map((y) =>
-      resolveEthiopianDateInGregorianYear(month, day, y),
-    );
+    // première résolution postérieure ou égale au début. `null` (date qui
+    // saute une année grégorienne) est ignoré.
+    const candidates = [gregorianYear, gregorianYear + 1]
+      .map((y) => resolveEthiopianDateInGregorianYear(month, day, y))
+      .filter((d): d is GregorianDate => d !== null);
     const startJdn = gregorianToJDN(start);
     for (const c of candidates) {
       if (gregorianToJDN(c) >= startJdn) return addDays(c, 1); // +1 → exclusif

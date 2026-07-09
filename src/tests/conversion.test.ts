@@ -102,4 +102,13 @@ describe("résolution d'une date éthiopienne dans une année grégorienne", () 
       day: 27,
     });
   });
+
+  it("renvoie null quand la date éthiopienne saute une année grégorienne", () => {
+    // Tahsas 22 tombe le 31 déc. 2026 puis le 1er jan. 2028 : aucune
+    // occurrence en 2027 (cas frontière du Nouvel An grégorien).
+    expect(resolveEthiopianDateInGregorianYear(4, 22, 2027)).toBeNull();
+    // Mais elle existe bien dans les années adjacentes.
+    expect(resolveEthiopianDateInGregorianYear(4, 22, 2026)).not.toBeNull();
+    expect(resolveEthiopianDateInGregorianYear(4, 22, 2028)).not.toBeNull();
+  });
 });

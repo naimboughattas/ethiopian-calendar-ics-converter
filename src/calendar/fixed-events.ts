@@ -32,11 +32,14 @@ export function allDefinitions(): CalendarEventDefinition[] {
   ];
 }
 
-/** Calcule le jour de début (grégorien) d'une définition pour l'année. */
+/**
+ * Calcule le jour de début (grégorien) d'une définition pour l'année, ou `null`
+ * si la définition est fixe et ne tombe pas dans cette année grégorienne.
+ */
 function resolveStart(
   def: CalendarEventDefinition,
   gregorianYear: number,
-): GregorianDate {
+): GregorianDate | null {
   if (def.movableRule) return resolveMovableStart(def, gregorianYear);
   if (def.ethiopianDate) {
     return resolveEthiopianDateInGregorianYear(
@@ -58,12 +61,17 @@ export function buildUid(definitionId: string, gregorianYear: number): string {
   return `${definitionId}-${gregorianYear}@ethiopian-calendar-converter`;
 }
 
-/** Résout une définition en occurrence concrète pour l'année donnée. */
+/**
+ * Résout une définition en occurrence concrète pour l'année donnée, ou `null`
+ * si une fête fixe ne tombe pas dans cette année grégorienne (cas frontière du
+ * 31 déc./1er jan.).
+ */
 export function resolveEvent(
   def: CalendarEventDefinition,
   gregorianYear: number,
-): ResolvedEvent {
+): ResolvedEvent | null {
   const start = resolveStart(def, gregorianYear);
+  if (!start) return null;
   const end = resolveEndExclusive(def, start, gregorianYear);
   return {
     definitionId: def.id,
@@ -111,6 +119,7 @@ function weeklyFastExclusions(gregorianYear: number): DateInterval[] {
   return allDefinitions()
     .filter((def) => WEEKLY_FAST_LIFTING_CATEGORIES.has(def.category))
     .map((def) => resolveEvent(def, gregorianYear))
+    .filter((ev): ev is ResolvedEvent => ev !== null)
     .map((ev) => ({
       startJdn: gregorianToJDN(ev.start),
       endExclusiveJdn: gregorianToJDN(ev.end),
@@ -130,7 +139,8 @@ export function resolveEventsForYear(
   const wanted = categories ? new Set(categories) : null;
   const events = allDefinitions()
     .filter((def) => !wanted || wanted.has(def.category))
-    .map((def) => resolveEvent(def, gregorianYear));
+    .map((def) => resolveEvent(def, gregorianYear))
+    .filter((ev): ev is ResolvedEvent => ev !== null);
 
   if (options.includeWeeklyFasts && (!wanted || wanted.has("fasting"))) {
     events.push(

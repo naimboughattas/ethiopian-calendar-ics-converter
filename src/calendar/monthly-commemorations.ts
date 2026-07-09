@@ -25,6 +25,9 @@ export function generateMonthlyCommemorations(
         commemoration.day,
         gregorianYear,
       );
+      // La date éthiopienne peut sauter cette année grégorienne (cas frontière
+      // 31 déc./1er jan.) : on ignore, elle apparaît l'année adjacente.
+      if (!start) continue;
       const end = addDays(start, 1); // DTEND exclusif
       const definitionId = `monthly-${commemoration.id}`;
 

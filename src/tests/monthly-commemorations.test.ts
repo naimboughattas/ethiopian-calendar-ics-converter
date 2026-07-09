@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { resolveEventsForYear } from "@/calendar/fixed-events";
+import {
+  resolveEventsForYear,
+  resolveEventsForYearRange,
+} from "@/calendar/fixed-events";
 import { gregorianToEthiopian } from "@/calendar/conversion";
 import { generateMonthlyCommemorations } from "@/calendar/monthly-commemorations";
 import { MONTHLY_COMMEMORATIONS } from "@/data/monthly-commemorations";
@@ -79,5 +82,18 @@ describe("intégration au moteur de résolution", () => {
     });
     expect(withMonthly.length).toBe(MONTHLY_COMMEMORATIONS.length * 12);
     expect(withMonthly.every((e) => e.category === "commemoration")).toBe(true);
+  });
+
+  it("le flux multi-années ne lève pas sur une date frontière (régression 500)", () => {
+    // 2027 saute Tahsas 22 (Uriel) : le flux doit l'ignorer, pas planter.
+    expect(() =>
+      resolveEventsForYearRange(2025, 2029, ["commemoration"], {
+        includeMonthlyCommemorations: true,
+      }),
+    ).not.toThrow();
+    const range = resolveEventsForYearRange(2025, 2029, ["commemoration"], {
+      includeMonthlyCommemorations: true,
+    });
+    expect(range.length).toBeGreaterThan(0);
   });
 });

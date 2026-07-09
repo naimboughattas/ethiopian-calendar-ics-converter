@@ -30,12 +30,18 @@ export function gregorianToEthiopian(
 
 /**
  * Résout une fête fixe (mois/jour éthiopiens) vers sa date grégorienne dans
- * une année grégorienne cible.
+ * une année grégorienne cible, ou `null` si elle n'y tombe pas.
  *
- * Subtilité importante : une même date éthiopienne peut tomber dans deux
- * années éthiopiennes chevauchant `gregorianYear`. On teste les deux années
- * éthiopiennes candidates (celle qui a commencé en `gregorianYear - 1` ou en
- * `gregorianYear`) et on retient l'occurrence dont la conversion tombe bien
+ * Une date éthiopienne récurrente tombe **0 ou 1** fois par année grégorienne
+ * (jamais 2 : l'écart entre deux occurrences vaut la longueur de l'année
+ * éthiopienne, ≥ 365 jours). Le cas **0** est réel : une date proche du
+ * 31 décembre / 1er janvier peut, selon la dérive des années bissextiles,
+ * tomber le 31 déc. d'une année puis le 1er jan. de l'année suivante, sautant
+ * ainsi l'année grégorienne intermédiaire. On renvoie alors `null` (l'appelant
+ * ignore l'occurrence ; elle apparaît dans l'année grégorienne adjacente).
+ *
+ * On teste les deux années éthiopiennes candidates (celle débutant en
+ * `gregorianYear - 8` ou `- 7`) et on retient celle dont la conversion tombe
  * dans `gregorianYear`.
  *
  * Exemple : Genna (Tahsas 29) tombe en janvier ; pour l'année grégorienne
@@ -45,7 +51,7 @@ export function resolveEthiopianDateInGregorianYear(
   ethMonth: number,
   ethDay: number,
   gregorianYear: number,
-): GregorianDate {
+): GregorianDate | null {
   // L'année éthiopienne courante au 1er janvier de `gregorianYear` vaut
   // environ gregorianYear - 8 ; celle qui débute en septembre vaut ~ -7.
   const candidates = [gregorianYear - 8, gregorianYear - 7];
@@ -57,8 +63,5 @@ export function resolveEthiopianDateInGregorianYear(
     });
     if (greg.year === gregorianYear) return greg;
   }
-  // Ne devrait jamais arriver pour des mois/jours valides.
-  throw new Error(
-    `Impossible de résoudre ${ethMonth}/${ethDay} dans l'année grégorienne ${gregorianYear}.`,
-  );
+  return null; // la date éthiopienne ne tombe pas dans cette année grégorienne
 }
