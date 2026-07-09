@@ -1,0 +1,29 @@
+{
+  "name": "ethiopian-calendar-converter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Générateur de flux ICS (Google Calendar) pour les événements culturels éthiopiens et les rites orthodoxes Tewahedo, avec conversion fiable calendrier éthiopien ↔ grégorien.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
