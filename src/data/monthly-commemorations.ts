@@ -1,28 +1,29 @@
 import type { LocalizedText } from "@/types/event";
 
 /**
- * Commémorations MENSUELLES orthodoxes Tewahedo.
+ * MONTHLY Orthodox Tewahedo commemorations.
  *
- * De nombreux saints et mystères sont commémorés le **même quantième chaque
- * mois éthiopien**. On stocke le **jour du mois** (source de vérité) ; la date
- * grégorienne de chacune des 12 occurrences annuelles est recalculée.
+ * Many saints and mysteries are commemorated on the **same day-of-month each
+ * Ethiopian month**. We store the **day of month** (source of truth); the
+ * Gregorian date of each of the 12 yearly occurrences is recomputed.
  *
- * Cette liste est un **sous-ensemble bien établi** et **extensible**. Les
- * usages varient selon les paroisses ; à confirmer auprès du Synaxaire
- * (Senkessar) et d'une source ecclésiale (voir docs/ORTHODOX_RITES.md).
+ * This list is a **well-established subset** and is **extensible**. Usage
+ * varies by parish; confirm against the Synaxarium (Senkessar) and an
+ * ecclesiastical source (see docs/ORTHODOX_RITES.md).
  *
- * **Plusieurs commémorations peuvent partager le même quantième** (ex. jour 5 :
- * Gebre Menfes Kidus ET Pierre-et-Paul) : chaque entrée produit ses propres
- * occurrences avec un UID distinct. Les entrées suivent l'usage où le mensuel
- * tombe au même quantième que la grande fête annuelle du saint.
+ * **Several commemorations may share the same day-of-month** (e.g. day 5:
+ * Gebre Menfes Kidus AND Peter-and-Paul): each entry produces its own
+ * occurrences with a distinct UID. Entries follow the practice where the
+ * monthly commemoration falls on the same day-of-month as the saint's major
+ * annual feast.
  *
- * Note : les commémorations ne sont générées que pour les **mois 1 à 12**
- * (30 jours) ; Pagumē (mois 13) est ignoré.
+ * Note: commemorations are generated only for **months 1 to 12** (30 days);
+ * Pagumē (month 13) is ignored.
  */
 export type MonthlyCommemoration = {
-  /** Slug stable (base d'UID). */
+  /** Stable slug (UID base). */
   id: string;
-  /** Quantième du mois éthiopien (1..30). */
+  /** Day of the Ethiopian month (1..30). */
   day: number;
   title: LocalizedText;
   description?: Partial<LocalizedText>;

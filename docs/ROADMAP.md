@@ -1,51 +1,52 @@
 # Roadmap
 
-## Phases d'exécution
+## Execution phases
 
-| Phase | Contenu | État |
+| Phase | Content | Status |
 |---|---|---|
-| 1 | **Documentation** (README + 13 docs) | ✅ Fait |
-| 2 | **Modèle de données** typé (`types/`) | ✅ Fait |
-| 3 | **Conversion** éthiopien ↔ grégorien + tests | ✅ Fait |
-| 4 | **Événements fixes** (dates éthiopiennes) | ✅ Fait |
-| 5 | **Fêtes mobiles** orthodoxes (Fasika) | ✅ Fait |
-| 6 | **Jeûnes** multi-jours | ✅ Fait |
-| 7 | **Génération ICS** compatible Google | ✅ Fait |
-| 8 | **API Next.js** (routes `.ics` publiques) | ✅ Fait |
-| 9 | **Tests** (conversion, événements, bissextiles, ICS, jeûnes hebdo, commémorations) | ✅ Fait (67 tests) |
-| 10 | **Documentation finale** (README complet) | ✅ Fait |
+| 1 | **Documentation** (README + 13 docs) | ✅ Done |
+| 2 | Typed **data model** (`types/`) | ✅ Done |
+| 3 | **Conversion** Ethiopian ↔ Gregorian + tests | ✅ Done |
+| 4 | **Fixed events** (Ethiopian dates) | ✅ Done |
+| 5 | **Movable feasts** Orthodox (Fasika) | ✅ Done |
+| 6 | Multi-day **fasts** | ✅ Done |
+| 7 | Google-compatible **ICS generation** | ✅ Done |
+| 8 | **Next.js API** (public `.ics` routes) | ✅ Done |
+| 9 | **Tests** (conversion, events, leap years, ICS, weekly fasts, commemorations) | ✅ Done (70 tests) |
+| 10 | **Final documentation** (complete README) | ✅ Done |
 
-## Prochaines évolutions (post-v1)
+## Next steps (post-v1)
 
-### Contenu calendaire
-- ✅ **Jeûnes hebdomadaires** mercredi/vendredi (fenêtre pascale + fêtes +
-  anti-doublon) — via `?weekly=true`. Reste à affiner : exemptions coutumières
-  mineures (semaine post-Genna, etc.).
-- ✅ **Commémorations mensuelles** de saints (Michel, Gabriel, Mariam, Kidane
-  Mihret…) — via `?monthly=true` et flux `ethiopian-commemorations.ics`. Reste
-  à enrichir/valider la liste par paroisse.
-- **Fêtes régionales** à date coutumière (Irreecha) — nécessite une règle
-  dédiée et des sources.
-- Enrichir les **noms amhariques** manquants.
+### Calendar content
+- ✅ **Weekly fasts** Wednesday/Friday (paschal window + feasts +
+  anti-duplicate) — via `?weekly=true`. Still to refine: minor customary
+  exemptions (post-Genna week, etc.).
+- ✅ **Monthly saint commemorations** (Michael, Gabriel, Mariam, Kidane
+  Mihret…) — via `?monthly=true` and the `ethiopian-commemorations.ics` feed.
+  Still to enrich/validate the list by parish.
+- **Regional feasts** with customary dates (Irreecha) — requires a dedicated
+  rule and sources.
+- Fill in the missing **Amharic names**.
 
-### Qualité
-- **Snapshots ICS** par flux/année.
-- **Tests d'intégration HTTP** des routes (params, erreurs 400/404).
-- **Property-based testing** (fast-check) sur la conversion.
-- Validation par un **parseur iCalendar** tiers.
+### Quality
+- **ICS snapshots** per feed/year.
+- **HTTP integration tests** of the routes (params, 400/404 errors).
+- **Property-based testing** (fast-check) on the conversion.
+- Validation with a third-party **iCalendar parser**.
 
-### Produit
-- **Amharique** complet (contenu i18n).
-- **Sélecteur de flux** et prévisualisation sur la page d'accueil.
-- **Personnalisation** (choix des catégories, langue par abonnement).
-- **Rappels** (VALARM) optionnels pour certaines fêtes.
-- **Déploiement** documenté (Vercel) + URL publique stable.
+### Product
+- ✅ **Rich home page** with a language selector, option toggles, and one-click
+  subscribe buttons (Google Calendar / webcal / copy).
+- Complete **Amharic** (i18n content).
+- **Customization** (choice of categories, language per subscription).
+- Optional **reminders** (VALARM) for some feasts.
+- ✅ **Deployment** documented (Vercel) + stable public URL.
 
-### Fiabilité calendaire
-- Étendre/valider la **fenêtre au-delà de 2099** (offset julien variable).
-- Comparaison automatisée au **bâhre hasab** annuel officiel.
+### Calendar reliability
+- Extend/validate the **window beyond 2099** (variable Julian offset).
+- Automated comparison with the official annual **bāhre hasab**.
 
-## Convention de livraison
+## Delivery convention
 
-Un commit par phase (voir MCP_SETUP `git`), la documentation mise à jour **dans
-le même commit** que le code correspondant.
+One commit per phase (see MCP_SETUP `git`), documentation updated **in the same
+commit** as the corresponding code.

@@ -1,95 +1,98 @@
-# Stratégie de test
+# Testing strategy
 
-Runner : **Vitest**. Lancer avec `npm test` (ou `npm run test:watch`).
-Fichiers : `src/tests/*.test.ts`. **68 tests**, tous verts.
+Runner: **Vitest**. Run with `npm test` (or `npm run test:watch`).
+Files: `src/tests/*.test.ts`. **70 tests**, all green.
 
-## Philosophie
+## Philosophy
 
-- Le cœur métier est **pur** → testable sans réseau, sans DOM, sans `Date`
-  réelle (le `dtstamp` est injectable).
-- On teste des **invariants** et des **ancrages** vérifiés indépendamment
-  (comput julien, dates historiques), pas seulement « le code renvoie ce que le
-  code calcule ».
+- The business core is **pure** → testable without network, DOM, or a real
+  `Date` (the `dtstamp` is injectable).
+- We test **invariants** and independently-verified **anchors** (Julian
+  computus, historical dates), not just "the code returns what the code
+  computes".
 
-## Couverture par fichier
+## Coverage by file
 
 ### `conversion.test.ts`
 
-- **Ancrages du Nouvel An** : Meskerem 1 EC 2016→2020 = 11/12 septembre (dont
-  les années à décalage +1).
-- **Genna** année normale (2018 → 7 janv. 2026) et année décalée (2016 → 8 janv.
+- **New Year anchors**: Meskerem 1 EC 2016→2020 = 11/12 September (including the
+  +1 shifted years).
+- **Genna** normal year (2018 → 7 Jan 2026) and shifted year (2016 → 8 Jan
   2024).
-- **Round-trip exact** grégorien→éthiopien→grégorien sur ~30 000 JDN
-  (2 450 000–2 480 000).
-- **Bissextilité** : `E mod 4 = 3` ; Pagumē 5/6 jours ; 12 mois = 30 jours.
-- **Résolution par année** : bonne occurrence pour janvier (Genna) et septembre
-  (Meskel).
+- **Exact round-trip** Gregorian→Ethiopian→Gregorian over ~30,000 JDN
+  (2,450,000–2,480,000).
+- **Leap years**: `E mod 4 = 3`; Pagumē 5/6 days; 12 months = 30 days.
+- **Per-year resolution**: correct occurrence for January (Genna) and September
+  (Meskel); `null` when the date skips a Gregorian year (Tahsas 22 in 2027).
 
 ### `movable-feasts.test.ts`
 
-- **Fasika** = dates de référence 2022–2027 (Pâque orthodoxe connue).
-- **Décalages** : Hosanna = −7, Siklet = −2, Erget = +39, Peraklitos = +49,
-  Carême = −55.
+- **Fasika** = reference dates 2022–2027 (known Orthodox Pascha).
+- **Offsets**: Hosanna = −7, Siklet = −2, Erget = +39, Peraklitos = +49, Lent =
+  −55.
 
 ### `fixed-events.test.ts`
 
-- Résolution Meskel (27 sept.), Genna (7 janv.).
-- **DTEND exclusif** (= début + 1) pour un événement d'un jour.
-- Jours fériés grégoriens fixes (1er mai).
-- Jeûnes : durée du Grand Carême = 55 j ; Apôtres se termine après le début ;
-  Avent chevauche le Nouvel An grégorien.
-- **UID stables** ; filtrage par catégorie ; tri chronologique.
+- Resolution of Meskel (27 Sep), Genna (7 Jan).
+- **Exclusive DTEND** (= start + 1) for a one-day event.
+- Fixed Gregorian holidays (1 May).
+- Fasts: Great Lent length = 55 d; Apostles ends after the start; Advent
+  straddles the Gregorian New Year.
+- **Stable UIDs**; filtering by category; chronological sorting.
 
 ### `weekly-fasts.test.ts`
 
-- **Jour de la semaine** (JDN) ancré : 2000-01-01 = samedi, 2026-01-01 = jeudi.
-- Ne produit **que** des mercredis/vendredis.
-- Exclut la **fenêtre pascale** (Fasika → +49).
-- Respecte les **intervalles d'exclusion** fournis.
-- **Jeûne levé sur grande fête** : aucun jeûne hebdo le jour de Genna (7 janv.
-  2026, mercredi).
-- **Anti-doublon** : aucun jeûne hebdo à l'intérieur d'un grand jeûne.
-- UID stables par date ; déterminisme ; intégration via `includeWeeklyFasts`.
+- **Day of week** (JDN) anchored: 2000-01-01 = Saturday, 2026-01-01 = Thursday.
+- Produces **only** Wednesdays/Fridays.
+- Excludes the **paschal window** (Fasika → +49).
+- Respects the provided **exclusion intervals**.
+- **Fast lifted on a major feast**: no weekly fast on Genna day (7 Jan 2026,
+  Wednesday).
+- **Anti-duplicate**: no weekly fast inside a major fast.
+- Stable UIDs per date; determinism; integration via `includeWeeklyFasts`.
 
 ### `monthly-commemorations.test.ts`
 
-- **12 occurrences** par commémoration (mois éthiopiens 1..12, Pagumē exclu).
-- Chaque occurrence tombe sur le **bon quantième** éthiopien.
-- Toutes dans l'**année grégorienne** demandée ; 12 **mois distincts**.
-- UID stables par date ; déterminisme.
-- **Plusieurs commémorations le même quantième** (jour 5) → chacune ses 12
-  occurrences, UID tous distincts.
-- Intégration : rien sans `includeMonthlyCommemorations`, tout avec.
+- **12 occurrences** per commemoration (Ethiopian months 1..12, Pagumē
+  excluded).
+- Each occurrence falls on the **correct Ethiopian day-of-month**.
+- All in the requested **Gregorian year**; 12 **distinct months**.
+- Stable UIDs per date; determinism.
+- **Several commemorations on the same day-of-month** (day 5) → each with its 12
+  occurrences, all UIDs distinct.
+- Integration: nothing without `includeMonthlyCommemorations`, everything with;
+  the multi-year feed does not throw on a boundary date (500 regression).
 
 ### `ics-generator.test.ts`
 
-- Enveloppe VCALENDAR, `X-WR-TIMEZONE`, `VALUE=DATE`.
-- **CRLF** partout (aucun LF isolé).
-- UID / DTSTAMP / SUMMARY / CATEGORIES présents.
-- **Déterminisme** : deux générations identiques (dtstamp fixé).
-- **Échappement** et **pliage** à 75 octets (continuation par espace).
+- VCALENDAR envelope, `X-WR-TIMEZONE`, `VALUE=DATE`.
+- **CRLF** everywhere (no lone LF).
+- UID / DTSTAMP / SUMMARY / CATEGORIES present.
+- **Determinism**: two identical generations (fixed dtstamp).
+- **Escaping** and **folding** at 75 octets (space continuation).
 
-## Cas limites explicitement couverts
+## Explicitly covered edge cases
 
-| Cas limite | Test |
+| Edge case | Test |
 |---|---|
-| Décalage ±1 jour (année pré-bissextile) | `conversion` (Genna 2016) |
-| Pagumē 6 vs 5 | `conversion` (bissextilité) |
-| Fête de janvier vs septembre (choix d'année éthiopienne) | `conversion`, `fixed-events` |
-| Jeûne à cheval sur le 1er janvier | `fixed-events` (tsome-gena) |
-| Longueur de jeûne variable | `fixed-events` (tsome-hawaryat) |
-| Titres multi-octets (amharique) | `ics-generator` (pliage en octets) |
+| ±1 day shift (pre-leap year) | `conversion` (Genna 2016) |
+| Pagumē 6 vs 5 | `conversion` (leap years) |
+| January vs September feast (Ethiopian-year choice) | `conversion`, `fixed-events` |
+| Ethiopian date skipping a Gregorian year | `conversion`, `monthly-commemorations` |
+| Fast straddling 1 January | `fixed-events` (tsome-gena) |
+| Variable fast length | `fixed-events` (tsome-hawaryat) |
+| Multi-octet titles (Amharic) | `ics-generator` (octet folding) |
 
-## À ajouter (ROADMAP)
+## To add (ROADMAP)
 
-- Tests de **snapshot ICS** complets par flux/année.
-- Tests d'**intégration HTTP** des routes (`year`/`type`/`lang`, codes d'erreur).
-- Property-based testing sur la conversion (fast-check).
-- Validation par un **parseur iCalendar** tiers (ex. `ical.js`).
+- Full **ICS snapshot** tests per feed/year.
+- **HTTP integration** tests of the routes (`year`/`type`/`lang`, error codes).
+- Property-based testing on the conversion (fast-check).
+- Validation with a third-party **iCalendar parser** (e.g. `ical.js`).
 
 ## Conventions
 
-- Un test = une assertion de comportement claire.
-- Les dates de référence externes (Fasika, Nouvel An) sont **commentées** avec
-  leur source de vérité.
-- Ne jamais tester une constante contre elle-même : ancrer sur un fait externe.
+- One test = one clear behavioral assertion.
+- External reference dates (Fasika, New Year) are **commented** with their
+  source of truth.
+- Never test a constant against itself: anchor on an external fact.

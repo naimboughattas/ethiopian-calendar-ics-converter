@@ -3,15 +3,15 @@ import type { MovableRule } from "@/types/event";
 import { addDays, jdnToGregorian } from "./gregorian-date";
 
 /**
- * Règles du calendrier liturgique orthodoxe éthiopien (Tewahedo).
+ * Rules of the Ethiopian Orthodox (Tewahedo) liturgical calendar.
  *
- * L'Église orthodoxe éthiopienne calcule Fasika (Pâques) selon le comput
- * pascal orthodoxe (base julienne), comme l'ensemble des Églises orthodoxes.
- * Toutes les autres fêtes mobiles se déduisent de Fasika par un simple décalage
- * en jours. Voir docs/ORTHODOX_RITES.md et docs/CALENDAR_RULES.md.
+ * The Ethiopian Orthodox Church computes Fasika (Easter) using the Orthodox
+ * paschal computus (Julian-based), like all Orthodox Churches. Every other
+ * movable feast is derived from Fasika by a simple offset in days.
+ * See docs/ORTHODOX_RITES.md and docs/CALENDAR_RULES.md.
  */
 
-/** Convertit une date du calendrier julien en JDN. */
+/** Converts a Julian-calendar date to a JDN. */
 function julianToJDN(year: number, month: number, day: number): number {
   const a = Math.floor((14 - month) / 12);
   const y = year + 4800 - a;
@@ -26,8 +26,8 @@ function julianToJDN(year: number, month: number, day: number): number {
 }
 
 /**
- * Date grégorienne de Fasika (Pâques orthodoxe) pour une année grégorienne.
- * Algorithme de Meeus (comput julien), puis conversion julien → grégorien.
+ * Gregorian date of Fasika (Orthodox Easter) for a Gregorian year.
+ * Meeus algorithm (Julian computus), then Julian → Gregorian conversion.
  */
 export function fasikaGregorian(gregorianYear: number): GregorianDate {
   const year = gregorianYear;
@@ -37,31 +37,31 @@ export function fasikaGregorian(gregorianYear: number): GregorianDate {
   const d = (19 * c + 15) % 30;
   const e = (2 * a + 4 * b - d + 34) % 7;
   const f = d + e + 114;
-  const month = Math.floor(f / 31); // 3 = mars, 4 = avril (julien)
+  const month = Math.floor(f / 31); // 3 = March, 4 = April (Julian)
   const day = (f % 31) + 1;
-  // Date julienne de Pâques → JDN → grégorien.
+  // Julian Easter date → JDN → Gregorian.
   return jdnToGregorian(julianToJDN(year, month, day));
 }
 
 /**
- * Décalage (en jours) de chaque fête mobile par rapport à Fasika.
- * Négatif = avant Fasika, positif = après.
+ * Offset (in days) of each movable feast relative to Fasika.
+ * Negative = before Fasika, positive = after.
  */
 export const MOVABLE_OFFSETS_FROM_FASIKA: Record<MovableRule, number> = {
-  nineveh: -69, // Jeûne de Ninive (lundi)
-  abiy_tsom_start: -55, // Grand Carême / Hudadi (lundi)
-  debre_zeit: -28, // Mi-Carême (dimanche des Rameaux du Mont des Oliviers)
-  hosanna: -7, // Rameaux (dimanche)
-  rikbe_kahnat: -3, // Jeudi saint (Rikbe Kahnat)
-  siklet: -2, // Vendredi Saint (Crucifixion)
-  trinity_saturday: -1, // Samedi Saint (veille de Fasika)
-  fasika: 0, // Pâques (dimanche)
-  erget: 39, // Ascension (jeudi)
-  peraklitos: 49, // Pentecôte (Paraclet, dimanche)
-  tsome_hawaryat_start: 50, // Jeûne des Apôtres (lundi après Pentecôte)
+  nineveh: -69, // Fast of Nineveh (Monday)
+  abiy_tsom_start: -55, // Great Lent / Hudadi (Monday)
+  debre_zeit: -28, // Mid-Lent (Mount of Olives Palm Sunday)
+  hosanna: -7, // Palm Sunday
+  rikbe_kahnat: -3, // Maundy Thursday (Rikbe Kahnat)
+  siklet: -2, // Good Friday (Crucifixion)
+  trinity_saturday: -1, // Holy Saturday (eve of Fasika)
+  fasika: 0, // Easter (Sunday)
+  erget: 39, // Ascension (Thursday)
+  peraklitos: 49, // Pentecost (Paraclete, Sunday)
+  tsome_hawaryat_start: 50, // Apostles' Fast (Monday after Pentecost)
 };
 
-/** Résout une fête mobile en date grégorienne pour l'année donnée. */
+/** Resolves a movable feast to a Gregorian date for the given year. */
 export function resolveMovable(
   rule: MovableRule,
   gregorianYear: number,

@@ -1,34 +1,34 @@
 /**
- * Types fondamentaux pour les dates et la conversion calendaire.
+ * Core types for dates and calendar conversion.
  *
- * Le calendrier éthiopien (Ge'ez / Amete Mihret) possède 13 mois :
- *  - 12 mois de 30 jours (index 1..12) ;
- *  - un 13e mois, Pagumē (index 13), de 5 jours, ou 6 jours les années bissextiles.
+ * The Ethiopian calendar (Ge'ez / Amete Mihret) has 13 months:
+ *  - 12 months of 30 days (index 1..12);
+ *  - a 13th month, Pagumē (index 13), of 5 days, or 6 days in leap years.
  *
- * Règle de bissextilité éthiopienne : l'année E est bissextile si `E % 4 === 3`.
- * (Voir docs/CALENDAR_RULES.md pour la démonstration complète.)
+ * Ethiopian leap-year rule: year E is a leap year if `E % 4 === 3`.
+ * (See docs/CALENDAR_RULES.md for the full explanation.)
  */
 
-/** Date exprimée dans le calendrier éthiopien. */
+/** A date expressed in the Ethiopian calendar. */
 export type EthiopianDate = {
-  /** Année de l'ère éthiopienne (Amete Mihret). Optionnelle pour les fêtes fixes récurrentes. */
+  /** Year of the Ethiopian era (Amete Mihret). Optional for recurring fixed feasts. */
   year?: number;
-  /** Mois 1..13 (13 = Pagumē). */
+  /** Month 1..13 (13 = Pagumē). */
   month: number;
-  /** Jour 1..30 (1..5 ou 1..6 pour Pagumē). */
+  /** Day 1..30 (1..5 or 1..6 for Pagumē). */
   day: number;
 };
 
-/** Date exprimée dans le calendrier grégorien proleptique. */
+/** A date expressed in the proleptic Gregorian calendar. */
 export type GregorianDate = {
   year: number;
-  /** Mois 1..12. */
+  /** Month 1..12. */
   month: number;
-  /** Jour 1..31. */
+  /** Day 1..31. */
   day: number;
 };
 
-/** Les 13 mois éthiopiens, dans l'ordre (index 0 = Meskerem). */
+/** The 13 Ethiopian months, in order (index 0 = Meskerem). */
 export const ETHIOPIAN_MONTHS = [
   "Meskerem",
   "Tikimt",

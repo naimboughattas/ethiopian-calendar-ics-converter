@@ -1,64 +1,63 @@
 # Project Overview
 
-## Objectif
+## Goal
 
-Fournir un **générateur de calendrier abonnable (ICS)** pour Google Calendar,
-couvrant :
+Provide a **subscribable calendar generator (ICS)** for Google Calendar,
+covering:
 
-- les **événements culturels et nationaux** éthiopiens ;
-- les **rites orthodoxes Tewahedo** (fêtes fixes, fêtes mobiles, jeûnes,
-  commémorations) ;
+- Ethiopian **cultural and national events**;
+- **Orthodox Tewahedo rites** (fixed feasts, movable feasts, fasts,
+  commemorations);
 
-avec une **conversion correcte du calendrier éthiopien vers le grégorien**,
-recalculée pour chaque année.
+with **correct conversion from the Ethiopian to the Gregorian calendar**,
+recomputed for each year.
 
-## Problème résolu
+## Problem solved
 
-Le calendrier éthiopien diffère du grégorien (13 mois, décalage de 7–8 ans,
-règle de bissextilité propre). Les fêtes éthiopiennes sont définies dans **leur**
-calendrier ; leur date grégorienne **change chaque année** et dépend des années
-bissextiles des deux calendriers. Coder des dates grégoriennes en dur produit
-des erreurs (typiquement ±1 jour autour des années bissextiles). Ce projet
-stocke la **source de vérité** en date éthiopienne (ou en règle liturgique) et
-**calcule** la date grégorienne.
+The Ethiopian calendar differs from the Gregorian one (13 months, a 7–8 year
+offset, its own leap-year rule). Ethiopian feasts are defined in **their**
+calendar; their Gregorian date **changes every year** and depends on the leap
+years of both calendars. Hard-coding Gregorian dates produces errors (typically
+±1 day around leap years). This project stores the **source of truth** as an
+Ethiopian date (or a liturgical rule) and **computes** the Gregorian date.
 
-## Utilisateurs cibles
+## Target users
 
-- Membres de la diaspora éthiopienne souhaitant suivre fêtes et jeûnes.
-- Paroisses et communautés orthodoxes Tewahedo.
-- Toute personne intéressée par la culture éthiopienne.
+- Members of the Ethiopian diaspora who want to follow feasts and fasts.
+- Orthodox Tewahedo parishes and communities.
+- Anyone interested in Ethiopian culture.
 
-## Périmètre (v1)
+## Scope (v1)
 
-Inclus :
+Included:
 
-- Conversion éthiopien ↔ grégorien (fonctions pures, testées).
-- Fêtes fixes culturelles/nationales/orthodoxes.
-- Fêtes mobiles dérivées de Fasika.
-- Périodes de jeûne majeures.
-- Flux ICS multiples + API par année.
-- Français et anglais.
+- Ethiopian ↔ Gregorian conversion (pure, tested functions).
+- Fixed cultural/national/Orthodox feasts.
+- Movable feasts derived from Fasika.
+- Major fasting periods.
+- Multiple ICS feeds + by-year API.
+- French and English.
 
-Exclu (v1, voir ROADMAP) :
+Excluded (v1, see ROADMAP):
 
-- Jeûnes hebdomadaires mercredi/vendredi.
-- Fêtes régionales à date coutumière variable (ex. Irreecha).
-- Interface de personnalisation avancée.
-- Amharique complet (structure prête, contenu partiel).
+- Weekly Wednesday/Friday fasts.
+- Regional feasts with variable customary dates (e.g. Irreecha).
+- Advanced customization UI.
+- Complete Amharic (structure ready, partial content).
 
-## Principes directeurs
+## Guiding principles
 
-1. **Documentation d'abord** : aucune règle calendaire non documentée.
-2. **Source de vérité = date éthiopienne / règle liturgique.**
-3. **Fonctions pures** pour toute conversion (déterministes, testables).
-4. **Séparation** fixe / mobile / culturel / national / jeûne.
-5. **UID ICS stables.**
-6. **i18n prévue** dès le modèle de données.
-7. **Tests stricts** couvrant les cas limites (bissextiles, chevauchements).
+1. **Documentation first**: no undocumented calendar rule.
+2. **Source of truth = Ethiopian date / liturgical rule.**
+3. **Pure functions** for every conversion (deterministic, testable).
+4. **Separation** of fixed / movable / cultural / national / fasting.
+5. **Stable ICS UIDs.**
+6. **i18n planned** from the data model onward.
+7. **Strict tests** covering edge cases (leap years, overlaps).
 
-## Critères de succès
+## Success criteria
 
-- Un utilisateur peut s'abonner à une URL et voir les fêtes aux **bonnes dates
-  grégoriennes**, année après année, sans intervention.
-- La conversion passe les tests d'ancrage (Nouvel An, Genna, Timkat, Meskel,
-  Fasika) sur plusieurs années, dont les années à décalage.
+- A user can subscribe to a URL and see the feasts on the **correct Gregorian
+  dates**, year after year, with no intervention.
+- The conversion passes the anchor tests (New Year, Genna, Timkat, Meskel,
+  Fasika) across several years, including the shifted years.

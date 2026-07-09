@@ -5,7 +5,7 @@ import { FEEDS, type FeedType } from "@/data/event-categories";
 import { CATEGORY_LABELS } from "@/data/event-categories";
 import type { Locale } from "@/types/event";
 
-/** Métadonnées d'affichage (emoji + description courte) par flux. */
+/** Display metadata (emoji + short description) per feed. */
 const FEED_META: Record<FeedType, { emoji: string; desc: Record<Locale, string> }> = {
   all: {
     emoji: "🇪🇹",
@@ -189,7 +189,7 @@ export default function HomePage() {
       setCopied(id);
       setTimeout(() => setCopied((c) => (c === id ? null : c)), 1800);
     } catch {
-      /* clipboard indisponible — ignorer */
+      /* clipboard unavailable — ignore */
     }
   }
 

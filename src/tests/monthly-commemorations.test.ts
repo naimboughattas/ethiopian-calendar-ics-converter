@@ -7,10 +7,10 @@ import { gregorianToEthiopian } from "@/calendar/conversion";
 import { generateMonthlyCommemorations } from "@/calendar/monthly-commemorations";
 import { MONTHLY_COMMEMORATIONS } from "@/data/monthly-commemorations";
 
-describe("commémorations mensuelles", () => {
+describe("monthly commemorations", () => {
   const events = generateMonthlyCommemorations(2026);
 
-  it("produit 12 occurrences par commémoration (mois 1..12)", () => {
+  it("produces 12 occurrences per commemoration (months 1..12)", () => {
     expect(events).toHaveLength(MONTHLY_COMMEMORATIONS.length * 12);
     for (const c of MONTHLY_COMMEMORATIONS) {
       const occ = events.filter((e) => e.definitionId === `monthly-${c.id}`);
@@ -18,7 +18,7 @@ describe("commémorations mensuelles", () => {
     }
   });
 
-  it("chaque occurrence tombe bien sur le quantième éthiopien attendu", () => {
+  it("each occurrence falls on the expected Ethiopian day-of-month", () => {
     for (const ev of events) {
       const c = MONTHLY_COMMEMORATIONS.find(
         (x) => `monthly-${x.id}` === ev.definitionId,
@@ -30,17 +30,17 @@ describe("commémorations mensuelles", () => {
     }
   });
 
-  it("chaque occurrence est dans l'année grégorienne demandée", () => {
+  it("each occurrence is in the requested Gregorian year", () => {
     for (const ev of events) expect(ev.start.year).toBe(2026);
   });
 
-  it("les 12 occurrences d'une commémoration couvrent 12 mois éthiopiens distincts", () => {
+  it("the 12 occurrences of a commemoration span 12 distinct Ethiopian months", () => {
     const mikael = events.filter((e) => e.definitionId === "monthly-mikael");
     const ethMonths = new Set(mikael.map((e) => gregorianToEthiopian(e.start).month));
     expect(ethMonths.size).toBe(12);
   });
 
-  it("génère des UID stables par date", () => {
+  it("generates stable UIDs per date", () => {
     const first = events.find((e) => e.definitionId === "monthly-mikael")!;
     const y = first.start.year;
     const m = String(first.start.month).padStart(2, "0");
@@ -50,15 +50,15 @@ describe("commémorations mensuelles", () => {
     );
   });
 
-  it("est déterministe", () => {
+  it("is deterministic", () => {
     expect(generateMonthlyCommemorations(2026)).toEqual(events);
   });
 
-  it("gère plusieurs commémorations le même quantième (ex. jour 5)", () => {
+  it("handles several commemorations on the same day-of-month (e.g. day 5)", () => {
     const day5 = MONTHLY_COMMEMORATIONS.filter((c) => c.day === 5);
     expect(day5.length).toBeGreaterThanOrEqual(2);
-    // Chaque commémorations du jour 5 doit avoir ses 12 occurrences, sur les
-    // mêmes dates que ses voisines mais avec un UID distinct.
+    // Each day-5 commemoration must have its 12 occurrences, on the same dates
+    // as its neighbors but with a distinct UID.
     const ids = day5.map((c) => `monthly-${c.id}`);
     for (const id of ids) {
       expect(events.filter((e) => e.definitionId === id)).toHaveLength(12);
@@ -66,17 +66,17 @@ describe("commémorations mensuelles", () => {
     const uids = events
       .filter((e) => ids.includes(e.definitionId))
       .map((e) => e.uid);
-    expect(new Set(uids).size).toBe(uids.length); // aucun doublon d'UID
+    expect(new Set(uids).size).toBe(uids.length); // no duplicate UID
   });
 });
 
-describe("intégration au moteur de résolution", () => {
-  it("n'ajoute rien sans l'option includeMonthlyCommemorations", () => {
+describe("integration with the resolution engine", () => {
+  it("adds nothing without the includeMonthlyCommemorations option", () => {
     const withoutMonthly = resolveEventsForYear(2026, ["commemoration"]);
     expect(withoutMonthly).toHaveLength(0);
   });
 
-  it("ajoute les commémorations quand demandé", () => {
+  it("adds the commemorations when requested", () => {
     const withMonthly = resolveEventsForYear(2026, ["commemoration"], {
       includeMonthlyCommemorations: true,
     });
@@ -84,8 +84,8 @@ describe("intégration au moteur de résolution", () => {
     expect(withMonthly.every((e) => e.category === "commemoration")).toBe(true);
   });
 
-  it("le flux multi-années ne lève pas sur une date frontière (régression 500)", () => {
-    // 2027 saute Tahsas 22 (Uriel) : le flux doit l'ignorer, pas planter.
+  it("the multi-year feed does not throw on a boundary date (500 regression)", () => {
+    // 2027 skips Tahsas 22 (Uriel): the feed must ignore it, not crash.
     expect(() =>
       resolveEventsForYearRange(2025, 2029, ["commemoration"], {
         includeMonthlyCommemorations: true,

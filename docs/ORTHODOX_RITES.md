@@ -1,137 +1,134 @@
-# Rites orthodoxes éthiopiens (Tewahedo)
+# Ethiopian Orthodox (Tewahedo) rites
 
-Catalogue des rites modélisés, par catégorie. La **source de vérité** est la
-date éthiopienne (fêtes fixes) ou la règle liturgique (fêtes mobiles).
+Catalog of the modeled rites, by category. The **source of truth** is the
+Ethiopian date (fixed feasts) or the liturgical rule (movable feasts).
 
-Implémentation : `data/fixed-orthodox-events.ts`, `calendar/movable-feasts.ts`,
+Implementation: `data/fixed-orthodox-events.ts`, `calendar/movable-feasts.ts`,
 `data/fasting-periods.ts`.
 
 ---
 
-## 1. Fêtes fixes
+## 1. Fixed feasts
 
-Date exprimée en calendrier éthiopien ; date grégorienne recalculée par année.
+Date expressed in the Ethiopian calendar; Gregorian date recomputed per year.
 
-| id | Fête | Date éthiopienne | Note |
+| id | Feast | Ethiopian date | Note |
 |---|---|---|---|
-| `demera` | Demera (veille de Meskel) | Meskerem 16 | Bûcher |
-| `meskel` | **Meskel** (Invention de la Croix) | Meskerem 17 | Majeure |
-| `gabriel-kulubi` | Saint Gabriel (Kulubi) | Tahsas 19 | Pèlerinage |
-| `genna` | **Genna** (Nativité) | Tahsas 29 | = 25 déc. julien |
-| `ketera` | Ketera (veille de Timkat) | Tir 10 | |
-| `timkat` | **Timkat** (Épiphanie) | Tir 11 | Majeure |
-| `cana-mikael` | Cana de Galilée / Saint Michel | Tir 12 | |
-| `hidar-tsion` | Sainte Marie de Sion | Hidar 21 | Axoum |
+| `demera` | Demera (Meskel eve) | Meskerem 16 | Bonfire |
+| `meskel` | **Meskel** (Finding of the Cross) | Meskerem 17 | Major |
+| `gabriel-kulubi` | St Gabriel (Kulubi) | Tahsas 19 | Pilgrimage |
+| `genna` | **Genna** (Nativity) | Tahsas 29 | = 25 Dec Julian |
+| `ketera` | Ketera (Timkat eve) | Tir 10 | |
+| `timkat` | **Timkat** (Epiphany) | Tir 11 | Major |
+| `cana-mikael` | Cana of Galilee / St Michael | Tir 12 | |
+| `hidar-tsion` | St Mary of Zion | Hidar 21 | Axum |
 | `buhe` | **Buhe** (Transfiguration) | Nehase 13 | Debre Tabor |
-| `filseta` | **Filseta** (Assomption) | Nehase 16 | Fin du jeûne de Filseta |
+| `filseta` | **Filseta** (Assumption) | Nehase 16 | End of the Filseta fast |
 
-## 2. Fêtes mobiles
+## 2. Movable feasts
 
-Dérivées de **Fasika** (Pâques), comput pascal julien. Décalage en jours :
+Derived from **Fasika** (Easter), Julian paschal computus. Offset in days:
 
-| id | Fête | Décalage / Fasika |
+| id | Feast | Offset / Fasika |
 |---|---|---|
-| `nineveh` (jeûne) | Ninive | −69 |
-| `abiy_tsom_start` (jeûne) | Début du Grand Carême | −55 |
-| `debre-zeit` | Debre Zeit (mi-Carême) | −28 |
-| `hosanna` | **Hosanna** (Rameaux) | −7 |
-| `rikbe-kahnat` | Rikbe Kahnat (Jeudi Saint) | −3 |
-| `siklet` | **Siklet** (Vendredi Saint) | −2 |
-| `fasika` | **Fasika** (Pâques) | 0 |
+| `nineveh` (fast) | Nineveh | −69 |
+| `abiy_tsom_start` (fast) | Start of Great Lent | −55 |
+| `debre-zeit` | Debre Zeit (mid-Lent) | −28 |
+| `hosanna` | **Hosanna** (Palm Sunday) | −7 |
+| `rikbe-kahnat` | Rikbe Kahnat (Maundy Thursday) | −3 |
+| `siklet` | **Siklet** (Good Friday) | −2 |
+| `fasika` | **Fasika** (Easter) | 0 |
 | `erget` | Erget (Ascension) | +39 |
-| `peraklitos` | Peraklitos (Pentecôte) | +49 |
+| `peraklitos` | Peraklitos (Pentecost) | +49 |
 
-Dates de référence de Fasika (validées) : 2023-04-16, 2024-05-05, 2025-04-20,
+Reference Fasika dates (validated): 2023-04-16, 2024-05-05, 2025-04-20,
 2026-04-12, 2027-05-02.
 
-## 3. Jeûnes
+## 3. Fasts
 
-Sept périodes majeures ; multi-jours. Voir `data/fasting-periods.ts`.
+Five major periods; multi-day. See `data/fasting-periods.ts`.
 
-| id | Jeûne | Début | Fin |
+| id | Fast | Start | End |
 |---|---|---|---|
-| `tsome-nnewe` | Ninive | Fasika − 69 | +3 jours |
-| `abiy-tsom` | Grand Carême (Hudadi) | Fasika − 55 | 55 jours (→ Fasika) |
-| `tsome-hawaryat` | Apôtres | Fasika + 50 | Hamle 4 (variable) |
-| `tsome-filseta` | Filseta (Dormition) | Nehase 1 | 16 jours |
-| `tsome-gena` | Avent (Sibket) | Hidar 15 | Tahsas 28 |
+| `tsome-nnewe` | Nineveh | Fasika − 69 | +3 days |
+| `abiy-tsom` | Great Lent (Hudadi) | Fasika − 55 | 55 days (→ Fasika) |
+| `tsome-hawaryat` | Apostles | Fasika + 50 | Hamle 4 (variable) |
+| `tsome-filseta` | Filseta (Dormition) | Nehase 1 | 16 days |
+| `tsome-gena` | Advent (Sibket) | Hidar 15 | Tahsas 28 |
 
-### Jeûnes hebdomadaires
+### Weekly fasts
 
-Le **mercredi** et le **vendredi** sont jeûnés toute l'année, sauf : la fenêtre
-pascale (50 jours Fasika→Pentecôte), les jours de grande fête (jeûne levé) et
-les jours déjà dans un grand jeûne (anti-doublon). Générés via `?weekly=true`
-(désactivés par défaut). Implémentation : `calendar/weekly-fasts.ts`.
+**Wednesday** and **Friday** are fasting days all year, except: the paschal
+window (50 days Fasika→Pentecost), major-feast days (fast lifted), and days
+already within a major fast (anti-duplicate). Generated via `?weekly=true`
+(disabled by default). Implementation: `calendar/weekly-fasts.ts`.
 
-Non modélisé en v1 : **Tsome Dihnet** et exemptions coutumières mineures. Voir
-ROADMAP.
+Not modeled in v1: **Tsome Dihnet** and minor customary exemptions. See ROADMAP.
 
-## 4. Commémorations mensuelles
+## 4. Monthly commemorations
 
-De nombreux saints/mystères sont commémorés le **même quantième chaque mois
-éthiopien**. Générées à la demande (`?monthly=true` ou flux dédié
-`ethiopian-commemorations.ics`) — 12 occurrences/an par commémoration (mois
-1..12, Pagumē exclu). Source : `data/monthly-commemorations.ts`.
+Many saints/mysteries are commemorated on the **same day-of-month each Ethiopian
+month**. Generated on demand (`?monthly=true` or the dedicated feed
+`ethiopian-commemorations.ics`) — 12 occurrences/year per commemoration
+(months 1..12, Pagumē excluded). Source: `data/monthly-commemorations.ts`.
 
-| Jour du mois | Commémoration(s) |
+| Day of month | Commemoration(s) |
 |---|---|
-| 1 | Lideta (Nativité de Marie) ; Saint Raguel |
-| 3 | Be'ata (Présentation de Marie au Temple) |
-| 5 | Gebre Menfes Kidus (Abbo) ; Pierre-et-Paul |
-| 6 | Qusquam (Notre-Dame de Qusquam) |
-| 7 | Sainte Trinité (Selassie) |
-| 8 | Arba'etu Ensesa (Quatre Vivants) |
-| 10 | Meskel (Croix, commémoration mensuelle) |
-| 12 | Saint Michel (Mikael) |
+| 1 | Lideta (Nativity of Mary); St Raguel |
+| 3 | Be'ata (Presentation of Mary at the Temple) |
+| 5 | Gebre Menfes Kidus (Abbo); Peter and Paul |
+| 6 | Qusquam (Our Lady of Qusquam) |
+| 7 | Holy Trinity (Selassie) |
+| 8 | Arba'etu Ensesa (Four Living Creatures) |
+| 10 | Meskel (Cross, monthly commemoration) |
+| 12 | St Michael (Mikael) |
 | 14 | Abune Aregawi |
-| 15 | Saint Cyriaque (Kirkos) |
-| 16 | Kidane Mihret (Alliance de Miséricorde) |
-| 17 | Saint Étienne (Estifanos) |
-| 19 | Saint Gabriel |
-| 21 | Sainte Marie (Mariam) |
-| 22 | Saint Uriel (Uraël) |
-| 23 | Saint Georges (Giyorgis) |
+| 15 | St Cyriacus (Kirkos) |
+| 16 | Kidane Mihret (Covenant of Mercy) |
+| 17 | St Stephen (Estifanos) |
+| 19 | St Gabriel |
+| 21 | St Mary (Mariam) |
+| 22 | St Uriel |
+| 23 | St George (Giyorgis) |
 | 24 | Abune Tekle Haymanot |
-| 25 | Saint Mercure (Merkorios) |
-| 27 | Medhane Alem (Sauveur du Monde) |
+| 25 | St Mercurius (Merkorios) |
+| 27 | Medhane Alem (Saviour of the World) |
 | 28 | Amanuel (Emmanuel) |
-| 29 | Lidet (commémoration mensuelle de la Nativité) |
-| 30 | Saint Marc l'Évangéliste (Marqos) |
+| 29 | Lidet (monthly Nativity commemoration) |
+| 30 | St Mark the Evangelist (Marqos) |
 
-**24 commémorations** sur **22 quantièmes** (les jours 1 et 5 en portent deux),
-soit 288 occurrences/an. Plusieurs commémorations peuvent partager un jour.
+**24 commemorations** over **22 days-of-month** (days 1 and 5 carry two),
+i.e. 288 occurrences/year. Several commemorations may share a day.
 
-> Jours encore non couverts (2, 4, 9, 11, 13, 18, 20, 26) : laissés à une
-> extension **vérifiée** contre le Synaxaire (Senkessar), les usages variant
-> selon les paroisses. Chaque ajout = une ligne dans
-> `data/monthly-commemorations.ts`.
+> Days not yet covered (2, 4, 9, 11, 13, 18, 20, 26): left for a **verified**
+> extension against the Synaxarium (Senkessar), as usage varies by parish. Each
+> addition = one line in `data/monthly-commemorations.ts`.
 
-> Sous-ensemble **bien établi et extensible** ; les usages varient selon les
-> paroisses. À confirmer auprès d'une source ecclésiale. Quand une commémoration
-> mensuelle coïncide avec sa grande fête annuelle (ex. Mikael le 12 Tir), les
-> deux peuvent apparaître si les deux catégories sont demandées — comportement
-> attendu.
+> A **well-established and extensible** subset; usage varies by parish. Confirm
+> against an ecclesiastical source. When a monthly commemoration coincides with
+> its major annual feast (e.g. Mikael on Tir 12), both may appear if both
+> categories are requested — expected behavior.
 
-## 5. Événements majeurs — récapitulatif
+## 5. Major events — summary
 
-| Événement | Type | Quand |
+| Event | Type | When |
 |---|---|---|
-| **Genna** | fixe | Tahsas 29 (≈ 7 janv.) |
-| **Timkat** | fixe | Tir 11 (≈ 19 janv.) |
-| **Meskel** | fixe | Meskerem 17 (≈ 27 sept.) |
-| **Fasika** | mobile | comput julien (avr./mai) |
-| **Hosanna** | mobile | Fasika − 7 |
-| **Siklet** | mobile | Fasika − 2 |
-| **Filseta** | fixe | Nehase 16 (≈ 22 août) |
-| **Tsome Nebiyat** (= Tsome Gena / Avent) | jeûne | Hidar 15 → Tahsas 28 |
-| **Hudadi** (= Abiy Tsom / Grand Carême) | jeûne | Fasika − 55 |
+| **Genna** | fixed | Tahsas 29 (≈ 7 Jan) |
+| **Timkat** | fixed | Tir 11 (≈ 19 Jan) |
+| **Meskel** | fixed | Meskerem 17 (≈ 27 Sep) |
+| **Fasika** | movable | Julian computus (Apr/May) |
+| **Hosanna** | movable | Fasika − 7 |
+| **Siklet** | movable | Fasika − 2 |
+| **Filseta** | fixed | Nehase 16 (≈ 22 Aug) |
+| **Tsome Nebiyat** (= Tsome Gena / Advent) | fast | Hidar 15 → Tahsas 28 |
+| **Hudadi** (= Abiy Tsom / Great Lent) | fast | Fasika − 55 |
 
-> **Terminologie** : « Tsome Nebiyat » (jeûne des Prophètes) désigne le jeûne de
-> l'Avent, modélisé ici sous `tsome-gena`. « Hudadi » est un autre nom du Grand
-> Carême (`abiy-tsom`).
+> **Terminology**: "Tsome Nebiyat" (Fast of the Prophets) refers to the Advent
+> fast, modeled here as `tsome-gena`. "Hudadi" is another name for Great Lent
+> (`abiy-tsom`).
 
-## Sources et vérification
+## Sources and verification
 
-Confirmer les dates auprès du **bâhre hasab** annuel et des annonces du
-patriarcat Tewahedo avant tout usage liturgique (voir `calendar-research-agent`
-dans AGENTS.md).
+Confirm dates against the annual **bāhre hasab** and Tewahedo patriarchate
+announcements before any liturgical use (see `calendar-research-agent` in
+AGENTS.md).

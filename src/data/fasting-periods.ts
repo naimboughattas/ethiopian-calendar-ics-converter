@@ -1,15 +1,15 @@
 import type { CalendarEventDefinition } from "@/types/event";
 
 /**
- * Périodes de JEÛNE orthodoxes (Tsome). Ce sont des événements multi-jours.
+ * Orthodox FASTING periods (Tsome). These are multi-day events.
  *
- * - Longueur fixe → `durationDays`.
- * - Longueur variable se terminant sur une date éthiopienne fixe →
- *   `endEthiopianDate` (inclusive).
- * - Départ mobile (dépend de Fasika) → `movableRule`.
- * - Départ fixe → `ethiopianDate`.
+ * - Fixed length → `durationDays`.
+ * - Variable length ending on a fixed Ethiopian date → `endEthiopianDate`
+ *   (inclusive).
+ * - Movable start (depends on Fasika) → `movableRule`.
+ * - Fixed start → `ethiopianDate`.
  *
- * Voir docs/ORTHODOX_RITES.md § « Jeûnes ».
+ * See docs/ORTHODOX_RITES.md § "Fasting".
  */
 export const FASTING_PERIODS: CalendarEventDefinition[] = [
   {
@@ -57,7 +57,7 @@ export const FASTING_PERIODS: CalendarEventDefinition[] = [
     isMovable: true,
     isAllDay: true,
     movableRule: "tsome_hawaryat_start",
-    endEthiopianDate: { month: 11, day: 4 }, // Hamle 4 (inclusif)
+    endEthiopianDate: { month: 11, day: 4 }, // Hamle 4 (inclusive)
   },
   {
     id: "tsome-filseta",
@@ -87,6 +87,6 @@ export const FASTING_PERIODS: CalendarEventDefinition[] = [
     isMovable: false,
     isAllDay: true,
     ethiopianDate: { month: 3, day: 15 }, // Hidar 15
-    endEthiopianDate: { month: 4, day: 28 }, // Tahsas 28 (inclusif)
+    endEthiopianDate: { month: 4, day: 28 }, // Tahsas 28 (inclusive)
   },
 ];

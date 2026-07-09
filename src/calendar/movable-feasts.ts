@@ -3,9 +3,9 @@ import type { CalendarEventDefinition } from "@/types/event";
 import { resolveMovable } from "./orthodox-rules";
 
 /**
- * Fêtes orthodoxes MOBILES (dépendant de Fasika). Chaque fête est définie par
- * une `movableRule` résolue par `orthodox-rules.ts`. Ce module fournit à la
- * fois les définitions et l'aide à la résolution du jour de début.
+ * MOVABLE Orthodox feasts (depending on Fasika). Each feast is defined by a
+ * `movableRule` resolved by `orthodox-rules.ts`. This module provides both the
+ * definitions and the helper for resolving the start day.
  */
 export const MOVABLE_FEASTS: CalendarEventDefinition[] = [
   {
@@ -91,15 +91,15 @@ export const MOVABLE_FEASTS: CalendarEventDefinition[] = [
 ];
 
 /**
- * Résout le jour de début (grégorien) d'une définition mobile pour l'année.
- * Lève si la définition n'a pas de `movableRule`.
+ * Resolves the (Gregorian) start day of a movable definition for the year.
+ * Throws if the definition has no `movableRule`.
  */
 export function resolveMovableStart(
   def: CalendarEventDefinition,
   gregorianYear: number,
 ): GregorianDate {
   if (!def.movableRule) {
-    throw new Error(`La définition ${def.id} n'a pas de movableRule.`);
+    throw new Error(`Definition ${def.id} has no movableRule.`);
   }
   return resolveMovable(def.movableRule, gregorianYear);
 }

@@ -1,18 +1,18 @@
-# Modèle de données
+# Data model
 
-Types dans `src/types/`. Le modèle sépare la **définition** (intemporelle,
-source de vérité) de l'**occurrence résolue** (datée pour une année grégorienne).
+Types in `src/types/`. The model separates the **definition** (timeless, source
+of truth) from the **resolved occurrence** (dated for a Gregorian year).
 
-## Types calendaires (`types/calendar.ts`)
+## Calendar types (`types/calendar.ts`)
 
 ```ts
 type EthiopianDate = { year?: number; month: number; day: number };
 type GregorianDate = { year: number; month: number; day: number };
 ```
 
-`ETHIOPIAN_MONTHS` : les 13 noms translittérés (Meskerem … Pagume).
+`ETHIOPIAN_MONTHS`: the 13 transliterated names (Meskerem … Pagume).
 
-## Catégories et i18n (`types/event.ts`)
+## Categories and i18n (`types/event.ts`)
 
 ```ts
 type CalendarEventCategory =
@@ -20,38 +20,38 @@ type CalendarEventCategory =
   | "fasting" | "national" | "commemoration";
 
 type Locale = "fr" | "en" | "am";
-type LocalizedText = { fr: string; en: string; am?: string }; // fr requis
+type LocalizedText = { fr: string; en: string; am?: string }; // fr required
 ```
 
-## Définition d'événement — source de vérité
+## Event definition — source of truth
 
 ```ts
 type CalendarEventDefinition = {
-  id: string;                       // stable → base de l'UID
+  id: string;                       // stable → UID base
   title: LocalizedText;
   description?: Partial<LocalizedText>;
   category: CalendarEventCategory;
   isMovable: boolean;
   isAllDay: boolean;
 
-  // Un seul mode de départ parmi :
-  ethiopianDate?: { month; day };   // fête fixe (recalculée par année)
-  movableRule?: MovableRule;        // fête mobile (dépend de Fasika)
-  gregorianFixed?: { month; day };  // jour férié civil grégorien
+  // Exactly one start mode among:
+  ethiopianDate?: { month; day };   // fixed feast (recomputed per year)
+  movableRule?: MovableRule;        // movable feast (depends on Fasika)
+  gregorianFixed?: { month; day };  // Gregorian civil holiday
 
-  // Durée (jeûnes) : l'un ou l'autre
-  durationDays?: number;            // longueur fixe
-  endEthiopianDate?: { month; day };// fin variable sur date éthiopienne fixe
+  // Duration (fasts): one or the other
+  durationDays?: number;            // fixed length
+  endEthiopianDate?: { month; day };// variable end on a fixed Ethiopian date
 
-  note?: string;                    // hypothèses/sources (non exporté ICS)
+  note?: string;                    // assumptions/sources (not exported to ICS)
 };
 ```
 
-**Règle d'exclusivité** : `ethiopianDate`, `movableRule`, `gregorianFixed` sont
-mutuellement exclusifs (un seul mode de départ). De même `durationDays` vs
+**Exclusivity rule**: `ethiopianDate`, `movableRule`, `gregorianFixed` are
+mutually exclusive (a single start mode). Likewise `durationDays` vs
 `endEthiopianDate`.
 
-## Occurrence résolue
+## Resolved occurrence
 
 ```ts
 type ResolvedEvent = {
@@ -61,21 +61,21 @@ type ResolvedEvent = {
   description?: Partial<LocalizedText>;
   isAllDay: boolean;
   start: GregorianDate;   // inclusive
-  end: GregorianDate;     // EXCLUSIVE (convention DTEND)
-  uid: string;            // `<id>-<année>@ethiopian-calendar-converter`
+  end: GregorianDate;     // EXCLUSIVE (DTEND convention)
+  uid: string;            // `<id>-<year>@ethiopian-calendar-converter`
 };
 ```
 
-## Règles de calcul de dépendances
+## Dependency computation rules
 
-| Champ | Résolu par |
+| Field | Resolved by |
 |---|---|
 | `ethiopianDate` | `conversion.resolveEthiopianDateInGregorianYear` |
-| `movableRule` | `orthodox-rules.resolveMovable` (base Fasika) |
-| `gregorianFixed` | direct (année + mois/jour) |
+| `movableRule` | `orthodox-rules.resolveMovable` (Fasika based) |
+| `gregorianFixed` | direct (year + month/day) |
 | `durationDays` / `endEthiopianDate` | `fasting-periods.resolveEndExclusive` |
 
-## Flux (`data/event-categories.ts`)
+## Feeds (`data/event-categories.ts`)
 
 ```ts
 type FeedType = "all" | "ethiopian-orthodox" | "ethiopian-cultural"
@@ -85,30 +85,30 @@ type FeedType = "all" | "ethiopian-orthodox" | "ethiopian-cultural"
 type FeedConfig = {
   name: LocalizedText;
   categories: CalendarEventCategory[];
-  includeWeeklyFasts?: boolean;          // force les jeûnes hebdo
-  weeklyFastsOnly?: boolean;             // ne garde QUE les jeûnes hebdo
-  includeMonthlyCommemorations?: boolean;// force les commémorations mensuelles
+  includeWeeklyFasts?: boolean;          // force the weekly fasts
+  weeklyFastsOnly?: boolean;             // keep ONLY the weekly fasts
+  includeMonthlyCommemorations?: boolean;// force the monthly commemorations
 };
 ```
 
-Chaque flux mappe un ensemble de catégories + des drapeaux pour le contenu
-**dérivé**. Ajouter un flux = une entrée dans `FEEDS`, sans toucher au reste.
+Each feed maps a set of categories + flags for the **derived** content. Adding a
+feed = one entry in `FEEDS`, without touching anything else.
 
-## Contenu dérivé (non déclaratif)
+## Derived content (non-declarative)
 
-Deux familles d'événements ne sont pas des définitions statiques mais des
-occurrences **générées** à la demande :
+Two families of events are not static definitions but occurrences **generated**
+on demand:
 
-- **Jeûnes hebdomadaires** (`calendar/weekly-fasts.ts`) — mercredi/vendredi,
-  catégorie `fasting`, via `includeWeeklyFasts` / `?weekly=true`.
-- **Commémorations mensuelles** (`data/monthly-commemorations.ts` +
-  `calendar/monthly-commemorations.ts`) — catégorie `commemoration`, via
-  `includeMonthlyCommemorations` / `?monthly=true` :
+- **Weekly fasts** (`calendar/weekly-fasts.ts`) — Wednesday/Friday, `fasting`
+  category, via `includeWeeklyFasts` / `?weekly=true`.
+- **Monthly commemorations** (`data/monthly-commemorations.ts` +
+  `calendar/monthly-commemorations.ts`) — `commemoration` category, via
+  `includeMonthlyCommemorations` / `?monthly=true`:
 
 ```ts
 type MonthlyCommemoration = {
-  id: string;                  // slug stable → base d'UID
-  day: number;                 // quantième du mois éthiopien (1..30)
+  id: string;                  // stable slug → UID base
+  day: number;                 // Ethiopian day-of-month (1..30)
   title: LocalizedText;
   description?: Partial<LocalizedText>;
 };
@@ -116,8 +116,8 @@ type MonthlyCommemoration = {
 
 ## Invariants
 
-1. Aucune `CalendarEventDefinition` ne contient de date grégorienne **calculée**
-   depuis l'éthiopien (seulement `gregorianFixed` pour les jours civils légaux).
-2. `title.fr` toujours présent (repli garanti).
-3. `id` unique dans tout le catalogue (base d'UID stable).
-4. `end` toujours strictement postérieure à `start` (au moins +1 jour).
+1. No `CalendarEventDefinition` contains a Gregorian date **computed** from the
+   Ethiopian one (only `gregorianFixed` for legal civil days).
+2. `title.fr` always present (guaranteed fallback).
+3. `id` unique across the whole catalog (stable UID base).
+4. `end` always strictly after `start` (at least +1 day).

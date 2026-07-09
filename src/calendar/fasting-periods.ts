@@ -4,13 +4,13 @@ import { resolveEthiopianDateInGregorianYear } from "./conversion";
 import { addDays, gregorianToJDN } from "./gregorian-date";
 
 /**
- * Calcule la date de fin EXCLUSIVE (convention DTEND iCalendar) d'un événement,
- * à partir de sa date de début grégorienne et de sa définition.
+ * Computes the EXCLUSIVE end date (iCalendar DTEND convention) of an event,
+ * from its Gregorian start date and its definition.
  *
- * - `durationDays` : l'événement couvre N jours → fin = début + N.
- * - `endEthiopianDate` : dernier jour INCLUSIF exprimé en date éthiopienne →
- *   fin exclusive = (jour éthiopien résolu) + 1.
- * - sinon : événement d'une seule journée → fin = début + 1.
+ * - `durationDays`: the event spans N days → end = start + N.
+ * - `endEthiopianDate`: last INCLUSIVE day expressed as an Ethiopian date →
+ *   exclusive end = (resolved Ethiopian day) + 1.
+ * - otherwise: single-day event → end = start + 1.
  */
 export function resolveEndExclusive(
   def: CalendarEventDefinition,
@@ -23,19 +23,19 @@ export function resolveEndExclusive(
 
   if (def.endEthiopianDate) {
     const { month, day } = def.endEthiopianDate;
-    // La date de fin peut tomber dans l'année grégorienne du début ou la
-    // suivante (jeûne à cheval sur le Nouvel An grégorien). On choisit la
-    // première résolution postérieure ou égale au début. `null` (date qui
-    // saute une année grégorienne) est ignoré.
+    // The end date can fall in the start's Gregorian year or the next one
+    // (fast straddling the Gregorian New Year). We pick the first resolution
+    // on or after the start. `null` (a date that skips a Gregorian year) is
+    // ignored.
     const candidates = [gregorianYear, gregorianYear + 1]
       .map((y) => resolveEthiopianDateInGregorianYear(month, day, y))
       .filter((d): d is GregorianDate => d !== null);
     const startJdn = gregorianToJDN(start);
     for (const c of candidates) {
-      if (gregorianToJDN(c) >= startJdn) return addDays(c, 1); // +1 → exclusif
+      if (gregorianToJDN(c) >= startJdn) return addDays(c, 1); // +1 → exclusive
     }
     throw new Error(
-      `Date de fin ${month}/${day} introuvable après le début pour ${def.id}.`,
+      `End date ${month}/${day} not found after the start for ${def.id}.`,
     );
   }
 

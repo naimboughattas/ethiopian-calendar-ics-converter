@@ -15,14 +15,14 @@ import { MOVABLE_FEASTS, resolveMovableStart } from "./movable-feasts";
 import { generateWeeklyFasts, type DateInterval } from "./weekly-fasts";
 
 /**
- * Moteur de résolution : transforme les définitions d'événements (source de
- * vérité) en occurrences concrètes (`ResolvedEvent`) pour une année grégorienne.
+ * Resolution engine: turns event definitions (the source of truth) into
+ * concrete occurrences (`ResolvedEvent`) for a Gregorian year.
  *
- * C'est l'unique endroit où l'on décide de la date grégorienne de chaque
- * événement, en déléguant aux modules spécialisés (conversion, mobiles, jeûnes).
+ * This is the single place where the Gregorian date of each event is decided,
+ * delegating to the specialized modules (conversion, movable feasts, fasts).
  */
 
-/** Toutes les définitions connues, tous types confondus. */
+/** All known definitions, across all types. */
 export function allDefinitions(): CalendarEventDefinition[] {
   return [
     ...FIXED_CULTURAL_EVENTS,
@@ -33,8 +33,8 @@ export function allDefinitions(): CalendarEventDefinition[] {
 }
 
 /**
- * Calcule le jour de début (grégorien) d'une définition pour l'année, ou `null`
- * si la définition est fixe et ne tombe pas dans cette année grégorienne.
+ * Computes the (Gregorian) start day of a definition for the year, or `null`
+ * if the definition is fixed and does not fall in that Gregorian year.
  */
 function resolveStart(
   def: CalendarEventDefinition,
@@ -52,19 +52,19 @@ function resolveStart(
     return { year: gregorianYear, ...def.gregorianFixed };
   }
   throw new Error(
-    `La définition ${def.id} n'a ni ethiopianDate, ni movableRule, ni gregorianFixed.`,
+    `Definition ${def.id} has no ethiopianDate, movableRule, or gregorianFixed.`,
   );
 }
 
-/** UID ICS stable et déterministe (même valeur d'une génération à l'autre). */
+/** Stable, deterministic ICS UID (same value across generations). */
 export function buildUid(definitionId: string, gregorianYear: number): string {
   return `${definitionId}-${gregorianYear}@ethiopian-calendar-converter`;
 }
 
 /**
- * Résout une définition en occurrence concrète pour l'année donnée, ou `null`
- * si une fête fixe ne tombe pas dans cette année grégorienne (cas frontière du
- * 31 déc./1er jan.).
+ * Resolves a definition into a concrete occurrence for the given year, or
+ * `null` if a fixed feast does not fall in that Gregorian year (31 Dec/1 Jan
+ * boundary case).
  */
 export function resolveEvent(
   def: CalendarEventDefinition,
@@ -85,32 +85,31 @@ export function resolveEvent(
   };
 }
 
-/** Options de résolution. */
+/** Resolution options. */
 export type ResolveOptions = {
   /**
-   * Ajoute les jeûnes hebdomadaires (mercredi/vendredi) à la catégorie
-   * `fasting`. Désactivé par défaut (volume d'événements élevé).
+   * Adds the weekly (Wednesday/Friday) fasts to the `fasting` category.
+   * Disabled by default (high event volume).
    */
   includeWeeklyFasts?: boolean;
   /**
-   * Ajoute les commémorations mensuelles de saints à la catégorie
-   * `commemoration`. Désactivé par défaut (volume d'événements élevé).
+   * Adds the monthly saint commemorations to the `commemoration` category.
+   * Disabled by default (high event volume).
    */
   includeMonthlyCommemorations?: boolean;
 };
 
-/** Vrai si l'occurrence est un jeûne hebdomadaire généré. */
+/** True if the occurrence is a generated weekly fast. */
 export function isWeeklyFast(event: ResolvedEvent): boolean {
   return event.definitionId.startsWith("weekly-fast");
 }
 
 /**
- * Intervalles [début, fin) en JDN à retrancher du calcul des jeûnes
- * hebdomadaires :
- *  - **grands jeûnes** → anti-doublon (le jour est déjà jeûné) ;
- *  - **fêtes majeures** (orthodoxes fixes et mobiles) → le jeûne du mercredi/
- *    vendredi est LEVÉ lorsqu'une grande fête tombe ce jour-là (ex. Genna,
- *    Timkat). Chaque fête est un intervalle d'un jour.
+ * Intervals [start, end) in JDN to subtract from the weekly-fast computation:
+ *  - **major fasts** → anti-duplicate (the day is already a fast day);
+ *  - **major feasts** (fixed and movable Orthodox) → the Wednesday/Friday fast
+ *    is LIFTED when a major feast falls on that day (e.g. Genna, Timkat). Each
+ *    feast is a one-day interval.
  */
 const WEEKLY_FAST_LIFTING_CATEGORIES: ReadonlySet<CalendarEventCategory> =
   new Set(["fasting", "orthodox_fixed", "orthodox_movable"]);
@@ -127,9 +126,9 @@ function weeklyFastExclusions(gregorianYear: number): DateInterval[] {
 }
 
 /**
- * Résout tous les événements d'un ensemble de catégories pour une année
- * grégorienne, triés par date de début. C'est l'entrée principale utilisée
- * par le générateur ICS et l'API.
+ * Resolves all events of a set of categories for a Gregorian year, sorted by
+ * start date. This is the main entry point used by the ICS generator and the
+ * API.
  */
 export function resolveEventsForYear(
   gregorianYear: number,
@@ -159,9 +158,9 @@ export function resolveEventsForYear(
 }
 
 /**
- * Résout les événements sur une plage d'années grégoriennes [from, to]
- * (inclusives). Utilisé par les flux `.ics` abonnables, afin que le calendrier
- * reste alimenté sans devoir changer d'URL chaque année.
+ * Resolves events over a range of Gregorian years [from, to] (inclusive). Used
+ * by the subscribable `.ics` feeds so that the calendar stays populated without
+ * having to change the URL each year.
  */
 export function resolveEventsForYearRange(
   fromYear: number,

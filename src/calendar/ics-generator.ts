@@ -2,15 +2,15 @@ import type { Locale, ResolvedEvent } from "@/types/event";
 import { toIcsDate } from "./gregorian-date";
 
 /**
- * Génération d'un flux iCalendar (RFC 5545) compatible Google Calendar.
+ * Generation of an iCalendar (RFC 5545) feed compatible with Google Calendar.
  *
- * Choix clés :
- *  - événements « journée entière » via `VALUE=DATE` (DTSTART/DTEND) ;
- *  - DTEND exclusif (convention iCalendar) ;
- *  - UID stables et déterministes ;
- *  - lignes terminées par CRLF et pliées à 75 octets ;
- *  - fuseau déclaré via X-WR-TIMEZONE (Africa/Addis_Ababa) — les événements
- *    all-day n'ont pas besoin de VTIMEZONE.
+ * Key choices:
+ *  - all-day events via `VALUE=DATE` (DTSTART/DTEND);
+ *  - exclusive DTEND (iCalendar convention);
+ *  - stable, deterministic UIDs;
+ *  - lines terminated by CRLF and folded at 75 octets;
+ *  - time zone declared via X-WR-TIMEZONE (Africa/Addis_Ababa) — all-day
+ *    events do not need a VTIMEZONE.
  */
 
 const PRODID = "-//ethiopian-calendar-converter//EN";
@@ -20,11 +20,11 @@ const CRLF = "\r\n";
 export type IcsOptions = {
   locale: Locale;
   calendarName: string;
-  /** Valeur DTSTAMP fixe (format `YYYYMMDDTHHMMSSZ`). Par défaut : maintenant. */
+  /** Fixed DTSTAMP value (format `YYYYMMDDTHHMMSSZ`). Defaults to now. */
   dtstamp?: string;
 };
 
-/** Échappe une valeur texte iCalendar (RFC 5545 §3.3.11). */
+/** Escapes an iCalendar text value (RFC 5545 §3.3.11). */
 export function escapeText(value: string): string {
   return value
     .replace(/\\/g, "\\\\")
@@ -34,9 +34,9 @@ export function escapeText(value: string): string {
 }
 
 /**
- * Plie une ligne de contenu à 75 octets (RFC 5545 §3.1), les continuations
- * commençant par une espace. Le pliage compte en octets UTF-8, pas en
- * caractères (important pour l'amharique).
+ * Folds a content line at 75 octets (RFC 5545 §3.1), continuations starting
+ * with a space. Folding counts UTF-8 octets, not characters (important for
+ * Amharic).
  */
 export function foldLine(line: string): string {
   const encoder = new TextEncoder();
@@ -48,7 +48,7 @@ export function foldLine(line: string): string {
   let current: number[] = [];
   let isFirst = true;
   for (const byte of bytes) {
-    // 75 octets pour la 1re ligne, 74 pour les suivantes (espace de tête).
+    // 75 octets for the first line, 74 for the following ones (leading space).
     const limit = isFirst ? 75 : 74;
     if (current.length >= limit) {
       chunks.push(decoder.decode(new Uint8Array(current)));
@@ -61,7 +61,7 @@ export function foldLine(line: string): string {
   return chunks.join(`${CRLF} `);
 }
 
-/** Horodatage UTC déterministe au format iCalendar. */
+/** Deterministic UTC timestamp in iCalendar format. */
 function nowStamp(): string {
   return new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 }
@@ -74,7 +74,7 @@ function pickLocale(
   return text[locale] ?? text.fr ?? text.en;
 }
 
-/** Construit un unique bloc VEVENT. */
+/** Builds a single VEVENT block. */
 function buildEvent(event: ResolvedEvent, options: IcsOptions): string[] {
   const summary = pickLocale(event.title, options.locale) ?? event.definitionId;
   const description = pickLocale(event.description, options.locale);
@@ -95,7 +95,7 @@ function buildEvent(event: ResolvedEvent, options: IcsOptions): string[] {
   return lines;
 }
 
-/** Génère le flux ICS complet à partir d'occurrences résolues. */
+/** Generates the complete ICS feed from resolved occurrences. */
 export function generateIcs(
   events: ResolvedEvent[],
   options: IcsOptions,

@@ -6,10 +6,10 @@ import type { Locale } from "@/types/event";
 /**
  * GET /api/calendar?year=2026&type=all&lang=fr
  *
- * Renvoie un flux ICS pour l'année et le type de flux demandés.
- * - `year` : année grégorienne (par défaut : année courante).
- * - `type` : all | ethiopian-orthodox | ethiopian-cultural | ethiopian-fasting.
- * - `lang` : fr | en | am (par défaut fr).
+ * Returns an ICS feed for the requested year and feed type.
+ * - `year`: Gregorian year (defaults to the current year).
+ * - `type`: all | ethiopian-orthodox | ethiopian-cultural | ethiopian-fasting.
+ * - `lang`: fr | en | am (defaults to fr).
  */
 export const dynamic = "force-dynamic";
 
@@ -23,7 +23,7 @@ export function GET(request: Request): Response {
     10,
   );
   if (!Number.isFinite(year) || year < 1900 || year > 2200) {
-    return new Response("Paramètre `year` invalide (attendu 1900–2200).", {
+    return new Response("Invalid `year` parameter (expected 1900–2200).", {
       status: 400,
     });
   }
@@ -31,7 +31,7 @@ export function GET(request: Request): Response {
   const typeParam = url.searchParams.get("type") ?? "all";
   if (!isFeedType(typeParam)) {
     return new Response(
-      `Paramètre \`type\` invalide. Valeurs : ${Object.keys(FEEDS).join(", ")}.`,
+      `Invalid \`type\` parameter. Values: ${Object.keys(FEEDS).join(", ")}.`,
       { status: 400 },
     );
   }
@@ -61,7 +61,7 @@ export function GET(request: Request): Response {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
       "Content-Disposition": `inline; filename="ethiopian-${typeParam}-${year}.ics"`,
-      // Cache CDN (Vercel) 12 h + service en arrière-plan pendant 24 h.
+      // CDN cache (Vercel) 12 h + background serving for 24 h.
       "Cache-Control":
         "public, max-age=3600, s-maxage=43200, stale-while-revalidate=86400",
     },

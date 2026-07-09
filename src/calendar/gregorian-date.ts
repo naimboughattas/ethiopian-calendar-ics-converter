@@ -1,20 +1,20 @@
 import type { GregorianDate } from "@/types/calendar";
 
 /**
- * Fonctions pures pour le calendrier grégorien proleptique, basées sur le
- * Julian Day Number (JDN). Le JDN est un entier qui compte les jours de façon
- * continue : il sert de « langage commun » entre les calendriers.
+ * Pure functions for the proleptic Gregorian calendar, based on the Julian Day
+ * Number (JDN). The JDN is an integer that counts days continuously: it serves
+ * as a "common language" between calendars.
  *
- * Algorithmes classiques (Fliegel & Van Flandern). Toutes les fonctions sont
- * pures et sans effet de bord.
+ * Classic algorithms (Fliegel & Van Flandern). All functions are pure and
+ * side-effect free.
  */
 
-/** Vrai si `year` est bissextile dans le calendrier grégorien. */
+/** True if `year` is a leap year in the Gregorian calendar. */
 export function isGregorianLeapYear(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }
 
-/** Convertit une date grégorienne (année, mois 1-12, jour) en JDN. */
+/** Converts a Gregorian date (year, month 1-12, day) to a JDN. */
 export function gregorianToJDN(date: GregorianDate): number {
   const { year, month, day } = date;
   const a = Math.floor((14 - month) / 12);
@@ -31,7 +31,7 @@ export function gregorianToJDN(date: GregorianDate): number {
   );
 }
 
-/** Convertit un JDN en date grégorienne. */
+/** Converts a JDN to a Gregorian date. */
 export function jdnToGregorian(jdn: number): GregorianDate {
   const a = jdn + 32044;
   const b = Math.floor((4 * a + 3) / 146097);
@@ -46,20 +46,20 @@ export function jdnToGregorian(jdn: number): GregorianDate {
   };
 }
 
-/** Ajoute `days` (peut être négatif) à une date grégorienne. */
+/** Adds `days` (may be negative) to a Gregorian date. */
 export function addDays(date: GregorianDate, days: number): GregorianDate {
   return jdnToGregorian(gregorianToJDN(date) + days);
 }
 
 /**
- * Jour de la semaine d'un JDN : 0 = lundi … 6 = dimanche.
- * (JDN 2451545 = samedi 1er janvier 2000 → reste 5.)
+ * Day of week of a JDN: 0 = Monday … 6 = Sunday.
+ * (JDN 2451545 = Saturday 1 January 2000 → remainder 5.)
  */
 export function dayOfWeek(jdn: number): number {
   return ((jdn % 7) + 7) % 7;
 }
 
-/** Formate en `YYYYMMDD` (format DATE iCalendar pour les événements all-day). */
+/** Formats as `YYYYMMDD` (iCalendar DATE format for all-day events). */
 export function toIcsDate(date: GregorianDate): string {
   const y = String(date.year).padStart(4, "0");
   const m = String(date.month).padStart(2, "0");

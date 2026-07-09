@@ -1,6 +1,6 @@
 import type { CalendarEventCategory, LocalizedText } from "@/types/event";
 
-/** Libellés localisés de chaque catégorie. */
+/** Localized labels for each category. */
 export const CATEGORY_LABELS: Record<CalendarEventCategory, LocalizedText> = {
   cultural: { fr: "Culturel", en: "Cultural", am: "ባህላዊ" },
   orthodox_fixed: { fr: "Orthodoxe (fixe)", en: "Orthodox (fixed)", am: "ኦርቶዶክስ" },
@@ -11,9 +11,9 @@ export const CATEGORY_LABELS: Record<CalendarEventCategory, LocalizedText> = {
 };
 
 /**
- * Flux ICS publics et catégories qu'ils regroupent.
- * `type` est le paramètre accepté par l'API (`?type=`) et le nom de fichier
- * `.ics`. Voir docs/ICS_SPEC.md et docs/ARCHITECTURE.md.
+ * Public ICS feeds and the categories they group.
+ * `type` is the parameter accepted by the API (`?type=`) and the `.ics` file
+ * name. See docs/ICS_SPEC.md and docs/ARCHITECTURE.md.
  */
 export type FeedType =
   | "all"
@@ -24,18 +24,18 @@ export type FeedType =
   | "ethiopian-commemorations";
 
 /**
- * Configuration d'un flux : catégories retenues + drapeaux pour le contenu
- * DÉRIVÉ (jeûnes hebdomadaires, commémorations mensuelles), qui n'existe pas
- * sous forme de définitions statiques et n'est produit qu'à la demande.
+ * Feed configuration: selected categories + flags for the DERIVED content
+ * (weekly fasts, monthly commemorations), which does not exist as static
+ * definitions and is produced only on request.
  */
 export type FeedConfig = {
   name: LocalizedText;
   categories: CalendarEventCategory[];
-  /** Force la génération des jeûnes hebdomadaires mercredi/vendredi. */
+  /** Forces generation of the weekly Wednesday/Friday fasts. */
   includeWeeklyFasts?: boolean;
-  /** Ne conserve QUE les jeûnes hebdomadaires (flux dédié). */
+  /** Keeps ONLY the weekly fasts (dedicated feed). */
   weeklyFastsOnly?: boolean;
-  /** Force la génération des commémorations mensuelles de saints. */
+  /** Forces generation of the monthly saint commemorations. */
   includeMonthlyCommemorations?: boolean;
 };
 
@@ -82,7 +82,7 @@ export const FEEDS: Record<FeedType, FeedConfig> = {
   },
 };
 
-/** Valide et normalise un `type` de flux venant de la requête. */
+/** Validates and narrows a feed `type` coming from the request. */
 export function isFeedType(value: string): value is FeedType {
   return value in FEEDS;
 }

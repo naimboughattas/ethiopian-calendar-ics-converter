@@ -1,23 +1,23 @@
 # Ethiopian Calendar Converter
 
-Générateur de flux **ICS** (iCalendar) abonnable dans **Google Calendar** pour
-les **événements culturels éthiopiens** et les **rites orthodoxes Tewahedo**,
-avec une **conversion fiable du calendrier éthiopien vers le calendrier
-grégorien** recalculée pour chaque année.
+An **ICS** (iCalendar) feed generator, subscribable in **Google Calendar**, for
+**Ethiopian cultural events** and **Orthodox Tewahedo rites**, with **reliable
+conversion from the Ethiopian to the Gregorian calendar** recomputed for each
+year.
 
-> **Principe fondateur** : la source de vérité d'un événement est sa **date
-> éthiopienne** (ou sa règle liturgique). Aucune date grégorienne n'est codée en
-> dur lorsqu'elle dépend du calendrier éthiopien — elle est **calculée**.
+> **Founding principle**: the source of truth for an event is its **Ethiopian
+> date** (or its liturgical rule). No Gregorian date is hard-coded when it
+> depends on the Ethiopian calendar — it is **computed**.
 
-## Fonctionnalités
+## Features
 
-- Conversion pure éthiopien ↔ grégorien (via Julian Day Number).
-- Fêtes fixes (culturelles, nationales, orthodoxes) exprimées en dates éthiopiennes.
-- Fêtes mobiles orthodoxes calculées à partir de **Fasika** (Pâques, comput julien).
-- Périodes de **jeûne** multi-jours (Carême, Ninive, Filseta, Apôtres, Avent).
-- Génération ICS conforme RFC 5545, compatible Google Calendar (événements all-day).
-- Multilingue : **français** et **anglais** implémentés, **amharique** prévu.
-- Plusieurs flux : complet, orthodoxe, culturel, jeûnes.
+- Pure Ethiopian ↔ Gregorian conversion (via Julian Day Number).
+- Fixed feasts (cultural, national, Orthodox) expressed as Ethiopian dates.
+- Movable Orthodox feasts computed from **Fasika** (Easter, Julian computus).
+- Multi-day **fasting** periods (Lent, Nineveh, Filseta, Apostles, Advent).
+- RFC 5545-compliant ICS generation, Google Calendar compatible (all-day events).
+- Multilingual: **French** and **English** implemented, **Amharic** planned.
+- Multiple feeds: full, Orthodox, cultural, fasting.
 
 ## Installation
 
@@ -25,118 +25,118 @@ grégorien** recalculée pour chaque année.
 npm install
 ```
 
-## Lancement
+## Running
 
 ```bash
-npm run dev        # serveur de développement (http://localhost:3000)
-npm run build      # build de production
-npm start          # serveur de production
-npm test           # tests unitaires (Vitest)
-npm run typecheck  # vérification TypeScript stricte
+npm run dev        # development server (http://localhost:3000)
+npm run build      # production build
+npm start          # production server
+npm test           # unit tests (Vitest)
+npm run typecheck  # strict TypeScript check
 ```
 
 ## Usage
 
-### Flux `.ics` abonnables (fenêtre glissante d'années)
+### Subscribable `.ics` feeds (rolling window of years)
 
-| Flux                        | URL                                          |
+| Feed                        | URL                                          |
 | --------------------------- | -------------------------------------------- |
-| Tout                        | `/api/calendar/all.ics`                      |
-| Rites orthodoxes            | `/api/calendar/ethiopian-orthodox.ics`       |
-| Événements culturels        | `/api/calendar/ethiopian-cultural.ics`       |
-| Jeûnes (majeurs)            | `/api/calendar/ethiopian-fasting.ics`        |
-| Jeûnes hebdo (mer./ven.)    | `/api/calendar/ethiopian-weekly-fasts.ics`   |
-| Commémorations mensuelles   | `/api/calendar/ethiopian-commemorations.ics` |
+| All                         | `/api/calendar/all.ics`                      |
+| Orthodox rites              | `/api/calendar/ethiopian-orthodox.ics`       |
+| Cultural events             | `/api/calendar/ethiopian-cultural.ics`       |
+| Fasts (major)               | `/api/calendar/ethiopian-fasting.ics`        |
+| Weekly fasts (Wed/Fri)      | `/api/calendar/ethiopian-weekly-fasts.ics`   |
+| Monthly commemorations      | `/api/calendar/ethiopian-commemorations.ics` |
 
-Ajoutez `?lang=fr|en|am` pour la langue (fr par défaut) et `?weekly=true` pour
-inclure les **jeûnes hebdomadaires** mercredi/vendredi (désactivés par défaut).
+Add `?lang=fr|en|am` for the language (fr by default) and `?weekly=true` to
+include the **weekly** Wednesday/Friday fasts (disabled by default).
 
-### API par année
+### By-year API
 
 ```
 GET /api/calendar?year=2026&type=all&lang=fr
 ```
 
-- `year` : année grégorienne (1900–2200).
-- `type` : `all` | `ethiopian-orthodox` | `ethiopian-cultural` | `ethiopian-fasting` | `ethiopian-weekly-fasts` | `ethiopian-commemorations`.
-- `lang` : `fr` | `en` | `am`.
-- `weekly` : `true` pour ajouter les jeûnes hebdomadaires mercredi/vendredi.
-- `monthly` : `true` pour ajouter les commémorations mensuelles de saints.
+- `year`: Gregorian year (1900–2200).
+- `type`: `all` | `ethiopian-orthodox` | `ethiopian-cultural` | `ethiopian-fasting` | `ethiopian-weekly-fasts` | `ethiopian-commemorations`.
+- `lang`: `fr` | `en` | `am`.
+- `weekly`: `true` to add the weekly Wednesday/Friday fasts.
+- `monthly`: `true` to add the monthly saint commemorations.
 
-## Déploiement
+## Deployment
 
-Déploiement **zéro configuration** sur Vercel (Next.js). Voir
-[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). En résumé :
+**Zero-configuration** deployment on Vercel (Next.js). See
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). In short:
 
 ```bash
-# Option CLI
+# CLI option
 npx vercel login && npx vercel --prod
 
-# Option GitHub (déploiement continu)
-git push -u origin main   # puis « Import Project » sur vercel.com
+# GitHub option (continuous deployment)
+git push -u origin main   # then "Import Project" on vercel.com
 ```
 
-Le dépôt est déjà initialisé et committé, prêt à être poussé.
+The repository is already initialized and committed, ready to push.
 
-## Ajouter le calendrier dans Google Calendar
+## Add the calendar to Google Calendar
 
-1. Déployez l'application (ou exposez `localhost` via une URL publique).
-2. Copiez l'URL d'un flux, par ex. `https://votre-domaine/api/calendar/ethiopian-orthodox.ics`.
-3. Google Agenda → **Autres agendas** → **À partir de l'URL** → collez l'URL.
-4. Google actualise l'abonnement périodiquement (voir limites ci-dessous).
+1. Deploy the app (or expose `localhost` via a public URL).
+2. Copy a feed URL, e.g. `https://your-domain/api/calendar/ethiopian-orthodox.ics`.
+3. Google Calendar → **Other calendars** → **From URL** → paste the URL.
+4. Google refreshes the subscription periodically (see limitations below).
 
-## Architecture (résumé)
+## Architecture (summary)
 
 ```
 src/
-  app/api/calendar/          Routes ICS (Next.js App Router)
-  calendar/                  Fonctions pures : conversion, comput, ICS
-  data/                      Définitions d'événements (source de vérité)
-  types/                     Types TypeScript
-  tests/                     Tests unitaires (Vitest)
-docs/                        Documentation complète
+  app/api/calendar/          ICS routes (Next.js App Router)
+  calendar/                  Pure functions: conversion, computus, ICS
+  data/                      Event definitions (source of truth)
+  types/                     TypeScript types
+  tests/                     Unit tests (Vitest)
+docs/                        Full documentation
 ```
 
-Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) pour le détail.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for details.
 
 ## Documentation
 
-| Document | Contenu |
+| Document | Contents |
 | --- | --- |
-| [PROJECT_OVERVIEW](docs/PROJECT_OVERVIEW.md) | Vision, objectifs, périmètre |
-| [ARCHITECTURE](docs/ARCHITECTURE.md) | Structure technique, flux de données |
-| [CALENDAR_RULES](docs/CALENDAR_RULES.md) | Règles calendaires (référence centrale) |
-| [ETHIOPIAN_TO_GREGORIAN_CONVERSION](docs/ETHIOPIAN_TO_GREGORIAN_CONVERSION.md) | Algorithme de conversion |
-| [ORTHODOX_RITES](docs/ORTHODOX_RITES.md) | Fêtes, jeûnes, commémorations |
-| [ICS_SPEC](docs/ICS_SPEC.md) | Choix iCalendar / Google Calendar |
-| [DEPLOYMENT](docs/DEPLOYMENT.md) | Déploiement Vercel + URLs publiques |
-| [DATA_MODEL](docs/DATA_MODEL.md) | Modèle de données typé |
-| [TESTING_STRATEGY](docs/TESTING_STRATEGY.md) | Stratégie et cas limites |
-| [MCP_SETUP](docs/MCP_SETUP.md) | Serveurs MCP recommandés |
-| [AGENTS](docs/AGENTS.md) | Agents spécialisés |
-| [SKILLS](docs/SKILLS.md) | Compétences requises |
-| [ROADMAP](docs/ROADMAP.md) | Phases et évolutions |
+| [PROJECT_OVERVIEW](docs/PROJECT_OVERVIEW.md) | Vision, goals, scope |
+| [ARCHITECTURE](docs/ARCHITECTURE.md) | Technical structure, data flow |
+| [CALENDAR_RULES](docs/CALENDAR_RULES.md) | Calendar rules (central reference) |
+| [ETHIOPIAN_TO_GREGORIAN_CONVERSION](docs/ETHIOPIAN_TO_GREGORIAN_CONVERSION.md) | Conversion algorithm |
+| [ORTHODOX_RITES](docs/ORTHODOX_RITES.md) | Feasts, fasts, commemorations |
+| [ICS_SPEC](docs/ICS_SPEC.md) | iCalendar / Google Calendar choices |
+| [DEPLOYMENT](docs/DEPLOYMENT.md) | Vercel deployment + public URLs |
+| [DATA_MODEL](docs/DATA_MODEL.md) | Typed data model |
+| [TESTING_STRATEGY](docs/TESTING_STRATEGY.md) | Strategy and edge cases |
+| [MCP_SETUP](docs/MCP_SETUP.md) | Recommended MCP servers |
+| [AGENTS](docs/AGENTS.md) | Specialized agents |
+| [SKILLS](docs/SKILLS.md) | Required skills |
+| [ROADMAP](docs/ROADMAP.md) | Phases and future work |
 
-## Limites connues
+## Known limitations
 
-- **Fêtes pinées au calendrier julien** (Genna, Timkat) : elles suivent la date
-  éthiopienne (Tahsas 29 / Tir 11), ce qui les décale de +1 jour grégorien les
-  années précédant une année bissextile grégorienne (comportement **correct**
-  du calendrier arithmétique ; voir CALENDAR_RULES).
-- **Fêtes mobiles** : le comput suppose la coïncidence Fasika = Pâque orthodoxe
-  (base julienne), valable sur la période moderne.
-- **Jeûnes hebdomadaires** (mercredi/vendredi) disponibles via `?weekly=true`
-  (désactivés par défaut, volume). Seule la fenêtre pascale des 50 jours est
-  traitée comme période continue sans jeûne.
-- **Irreecha** et certaines fêtes régionales à date variable ne sont pas encore
-  modélisées (voir ROADMAP).
-- Conversion validée et fiable pour la fenêtre grégorienne **1900–2099**.
+- **Feasts pinned to the Julian calendar** (Genna, Timkat): they follow the
+  Ethiopian date (Tahsas 29 / Tir 11), which shifts them by +1 Gregorian day in
+  the years preceding a Gregorian leap year (the **correct** behavior of the
+  arithmetic calendar; see CALENDAR_RULES).
+- **Movable feasts**: the computus assumes Fasika = Orthodox Pascha (Julian
+  based), valid over the modern period.
+- **Weekly fasts** (Wednesday/Friday) available via `?weekly=true` (disabled by
+  default, volume). Only the 50-day paschal window is treated as a continuous
+  fast-free period.
+- **Irreecha** and some regional feasts with variable dates are not modeled yet
+  (see ROADMAP).
+- Conversion validated and reliable for the Gregorian window **1900–2099**.
 
 ## Roadmap
 
-Voir [`docs/ROADMAP.md`](docs/ROADMAP.md).
+See [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
-## Licence
+## License
 
-Projet éducatif/communautaire. Vérifiez les dates liturgiques auprès de sources
-ecclésiales officielles avant tout usage cultuel.
+Educational/community project. Verify liturgical dates against official
+ecclesiastical sources before any liturgical use.

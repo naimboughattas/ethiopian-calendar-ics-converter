@@ -1,8 +1,8 @@
-# Spécification ICS / compatibilité Google Calendar
+# ICS specification / Google Calendar compatibility
 
-Implémentation : `src/calendar/ics-generator.ts`. Conforme **RFC 5545**.
+Implementation: `src/calendar/ics-generator.ts`. **RFC 5545** compliant.
 
-## Enveloppe VCALENDAR
+## VCALENDAR envelope
 
 ```
 BEGIN:VCALENDAR
@@ -10,7 +10,7 @@ VERSION:2.0
 PRODID:-//ethiopian-calendar-converter//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:<nom du flux localisé>
+X-WR-CALNAME:<localized feed name>
 X-WR-TIMEZONE:Africa/Addis_Ababa
 X-PUBLISHED-TTL:PT12H
 REFRESH-INTERVAL;VALUE=DURATION:PT12H
@@ -18,12 +18,12 @@ REFRESH-INTERVAL;VALUE=DURATION:PT12H
 END:VCALENDAR
 ```
 
-- `METHOD:PUBLISH` : flux publié (abonnement, non invitation).
-- `X-WR-CALNAME` / `X-WR-TIMEZONE` : extensions lues par Google/Apple.
-- `X-PUBLISHED-TTL` + `REFRESH-INTERVAL` : suggèrent une actualisation toutes les
-  12 h (Google reste maître de sa fréquence réelle — voir limites).
+- `METHOD:PUBLISH`: published feed (subscription, not an invitation).
+- `X-WR-CALNAME` / `X-WR-TIMEZONE`: extensions read by Google/Apple.
+- `X-PUBLISHED-TTL` + `REFRESH-INTERVAL`: suggest a refresh every 12 h (Google
+  remains in control of its actual frequency — see limitations).
 
-## VEVENT (événement all-day)
+## VEVENT (all-day event)
 
 ```
 BEGIN:VEVENT
@@ -31,56 +31,56 @@ UID:genna-2026@ethiopian-calendar-converter
 DTSTAMP:20260101T000000Z
 DTSTART;VALUE=DATE:20260107
 DTEND;VALUE=DATE:20260108
-SUMMARY:Genna (Nativité / Noël éthiopien)
-DESCRIPTION:Nativité du Christ (Lidet). Correspond au 25 décembre julien.
+SUMMARY:Genna (Ethiopian Christmas / Nativity)
+DESCRIPTION:Nativity of Christ (Lidet). Corresponds to 25 December (Julian).
 CATEGORIES:orthodox_fixed
 TRANSP:TRANSPARENT
 END:VEVENT
 ```
 
-### Propriétés
+### Properties
 
-| Propriété | Règle |
+| Property | Rule |
 |---|---|
-| `UID` | **Stable et déterministe** : `<id>-<annéeGrég>@ethiopian-calendar-converter`. Rejouer la génération ne crée pas de doublon. |
-| `DTSTAMP` | Horodatage UTC. Injectable pour des tests déterministes. |
-| `DTSTART;VALUE=DATE` | Date de début, format `YYYYMMDD` (all-day). |
-| `DTEND;VALUE=DATE` | **Exclusif** : jour suivant la fin. Un jour → `DTEND = DTSTART + 1`. Période de N jours → `+ N`. |
-| `SUMMARY` | Titre localisé (`?lang=`), repli fr puis en. |
-| `DESCRIPTION` | Optionnelle, localisée. |
-| `CATEGORIES` | Catégorie de l'événement (filtrage/couleur). |
-| `TRANSP:TRANSPARENT` | N'affecte pas la disponibilité (« libre »). |
+| `UID` | **Stable and deterministic**: `<id>-<gregYear>@ethiopian-calendar-converter`. Re-running generation creates no duplicate. |
+| `DTSTAMP` | UTC timestamp. Injectable for deterministic tests. |
+| `DTSTART;VALUE=DATE` | Start date, `YYYYMMDD` format (all-day). |
+| `DTEND;VALUE=DATE` | **Exclusive**: the day after the end. One day → `DTEND = DTSTART + 1`. N-day period → `+ N`. |
+| `SUMMARY` | Localized title (`?lang=`), falling back to fr then en. |
+| `DESCRIPTION` | Optional, localized. |
+| `CATEGORIES` | Event category (filtering/color). |
+| `TRANSP:TRANSPARENT` | Does not affect availability ("free"). |
 
-## Encodage et sérialisation
+## Encoding and serialization
 
-- **CRLF** (`\r\n`) en fin de ligne (exigence RFC).
-- **Échappement** (`escapeText`) : `\` → `\\`, `;` → `\;`, `,` → `\,`, saut de
-  ligne → `\n`.
-- **Pliage de lignes** (`foldLine`) à **75 octets**, continuations préfixées
-  d'une espace. Le comptage est en **octets UTF-8** (indispensable pour les
-  titres en amharique).
-- Charset **UTF-8**, déclaré dans `Content-Type: text/calendar; charset=utf-8`.
+- **CRLF** (`\r\n`) at line endings (RFC requirement).
+- **Escaping** (`escapeText`): `\` → `\\`, `;` → `\;`, `,` → `\,`, newline →
+  `\n`.
+- **Line folding** (`foldLine`) at **75 octets**, continuations prefixed with a
+  space. Counting is in **UTF-8 octets** (essential for Amharic titles).
+- **UTF-8** charset, declared in `Content-Type: text/calendar; charset=utf-8`.
 
-## Fuseau horaire
+## Time zone
 
-Les événements étant **all-day** (`VALUE=DATE`, sans heure), aucun `VTIMEZONE`
-n'est nécessaire ; ils s'affichent le bon jour quel que soit le fuseau du
-client. `X-WR-TIMEZONE:Africa/Addis_Ababa` documente le fuseau de référence.
+Since events are **all-day** (`VALUE=DATE`, no time), no `VTIMEZONE` is needed;
+they display on the correct day regardless of the client's time zone.
+`X-WR-TIMEZONE:Africa/Addis_Ababa` documents the reference time zone.
 
-## Réponses HTTP
+## HTTP responses
 
 ```
 Content-Type: text/calendar; charset=utf-8
-Content-Disposition: inline; filename="<flux>.ics"
-Cache-Control: public, max-age=43200
+Content-Disposition: inline; filename="<feed>.ics"
+Cache-Control: public, max-age=3600, s-maxage=43200, stale-while-revalidate=86400
 ```
 
-## Compatibilité Google Calendar — points de vigilance
+`s-maxage` lets the CDN (Vercel) cache the response for 12 h; see DEPLOYMENT.md.
 
-- Google **met en cache** les abonnements par URL et actualise à **sa** cadence
-  (souvent 8–24 h, parfois plus). `REFRESH-INTERVAL` n'est qu'indicatif.
-- L'`UID` stable évite les doublons lors des ré-imports.
-- Les flux `.ics` couvrent une **fenêtre glissante d'années** (année−1 →
-  année+3) pour rester alimentés sans changer d'URL.
-- Utiliser **« À partir de l'URL »** (et non « Importer ») pour un abonnement
-  vivant.
+## Google Calendar compatibility — watch-outs
+
+- Google **caches** subscriptions by URL and refreshes at **its** own cadence
+  (often 8–24 h, sometimes more). `REFRESH-INTERVAL` is only advisory.
+- The stable `UID` avoids duplicates on re-import.
+- The `.ics` feeds cover a **rolling window of years** (year−1 → year+3) to stay
+  populated without changing the URL.
+- Use **"From URL"** (not "Import") for a live subscription.

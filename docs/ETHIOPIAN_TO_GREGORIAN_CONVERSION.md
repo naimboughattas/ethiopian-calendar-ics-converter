@@ -1,103 +1,104 @@
-# Conversion éthiopien ↔ grégorien
+# Ethiopian ↔ Gregorian conversion
 
-## Principe : le Julian Day Number (JDN)
+## Principle: the Julian Day Number (JDN)
 
-Le **JDN** est un compteur entier de jours, continu, indépendant de tout
-calendrier. On l'utilise comme **représentation pivot** : chaque calendrier
-sait convertir vers et depuis le JDN, donc toute conversion inter-calendaire se
-fait en deux étapes triviales et exactes.
+The **JDN** is a continuous integer count of days, independent of any calendar.
+We use it as the **pivot representation**: each calendar can convert to and from
+the JDN, so any cross-calendar conversion is done in two trivial and exact
+steps.
 
 ```
-Éthiopien ──► JDN ──► Grégorien
-Grégorien ──► JDN ──► Éthiopien
+Ethiopian ──► JDN ──► Gregorian
+Gregorian ──► JDN ──► Ethiopian
 ```
 
-Implémentation : `src/calendar/ethiopian-date.ts`, `src/calendar/gregorian-date.ts`,
+Implementation: `src/calendar/ethiopian-date.ts`, `src/calendar/gregorian-date.ts`,
 `src/calendar/conversion.ts`.
 
-## Constante d'époque
+## Epoch constant
 
 ```
 ETHIOPIC_EPOCH_JDN = 1_724_221
 ```
 
-C'est le JDN du **1 Meskerem an 1** de l'ère Amete Mihret. Cette valeur est
-**validée** : elle reproduit le Nouvel An éthiopien au 11 septembre grégorien
-(12 septembre l'année précédant une bissextile grégorienne), Meskel au 27/28
-septembre, Genna au 7/8 janvier, etc.
+This is the JDN of **1 Meskerem, year 1** of the Amete Mihret era. This value is
+**validated**: it reproduces the Ethiopian New Year on 11 September Gregorian
+(12 September in the year preceding a Gregorian leap year), Meskel on 27/28
+September, Genna on 7/8 January, etc.
 
-## Éthiopien → JDN
-
-```
-JDN = 1_724_221 + 365·(année−1) + ⌊année/4⌋ + 30·(mois−1) + (jour−1)
-```
-
-- `365·(année−1)` : jours des années complètes précédentes.
-- `⌊année/4⌋` : jours bissextiles accumulés (un tous les 4 ans).
-- `30·(mois−1)` : les mois font tous 30 jours (Pagumē étant le 13e).
-- `(jour−1)` : décalage dans le mois.
-
-## JDN → Éthiopien
+## Ethiopian → JDN
 
 ```
-e           = JDN − 1_724_221
-année       = ⌊(4·e + 1463) / 1461⌋
-débutAnnée  = 1_724_221 + 365·(année−1) + ⌊année/4⌋
-jourDeAnnée = JDN − débutAnnée              (0-indexé, 0..365)
-mois        = ⌊jourDeAnnée / 30⌋ + 1        (1..13)
-jour        = (jourDeAnnée mod 30) + 1      (1..30 ; 1..6 pour Pagumē)
+JDN = 1_724_221 + 365·(year−1) + ⌊year/4⌋ + 30·(month−1) + (day−1)
 ```
 
-`1461 = 4·365 + 1` est la longueur d'un cycle de 4 ans en jours ; `1463` cale la
-phase pour que la division entière retourne la bonne année.
+- `365·(year−1)`: days of the preceding complete years.
+- `⌊year/4⌋`: accumulated leap days (one every 4 years).
+- `30·(month−1)`: every month has 30 days (Pagumē being the 13th).
+- `(day−1)`: offset within the month.
 
-## Grégorien ↔ JDN
+## JDN → Ethiopian
 
-Algorithmes classiques de Fliegel & Van Flandern (voir `gregorian-date.ts`).
-Valables pour le **calendrier grégorien proleptique**.
+```
+e         = JDN − 1_724_221
+year      = ⌊(4·e + 1463) / 1461⌋
+yearStart = 1_724_221 + 365·(year−1) + ⌊year/4⌋
+dayOfYear = JDN − yearStart              (0-indexed, 0..365)
+month     = ⌊dayOfYear / 30⌋ + 1         (1..13)
+day       = (dayOfYear mod 30) + 1       (1..30; 1..6 for Pagumē)
+```
 
-## Résoudre une date éthiopienne dans une année grégorienne
+`1461 = 4·365 + 1` is the length of a 4-year cycle in days; `1463` phases the
+integer division so it returns the correct year.
 
-Une fête fixe est un couple **(mois, jour)** éthiopien sans année. Pour l'année
-grégorienne cible `G`, l'année éthiopienne à utiliser est soit `G−8`, soit
-`G−7`, selon que la fête tombe avant ou après le Nouvel An éthiopien
-(mi-septembre). On teste les deux et on garde la conversion qui tombe **dans
-`G`** :
+## Gregorian ↔ JDN
+
+Classic Fliegel & Van Flandern algorithms (see `gregorian-date.ts`). Valid for
+the **proleptic Gregorian calendar**.
+
+## Resolving an Ethiopian date within a Gregorian year
+
+A fixed feast is an Ethiopian **(month, day)** pair without a year. For the
+target Gregorian year `G`, the Ethiopian year to use is either `G−8` or `G−7`,
+depending on whether the feast falls before or after the Ethiopian New Year
+(mid-September). We test both and keep the conversion that falls **in `G`**:
 
 ```ts
-resolveEthiopianDateInGregorianYear(mois, jour, G):
-  pour ey ∈ [G−8, G−7]:
-    g = ethiopienToGregorien(ey, mois, jour)
-    si g.année == G: retourner g
+resolveEthiopianDateInGregorianYear(month, day, G):
+  for ey ∈ [G−8, G−7]:
+    g = ethiopianToGregorian(ey, month, day)
+    if g.year == G: return g
+  return null   // the date skips this Gregorian year (see edge cases)
 ```
 
-Exemple :
-- **Genna** (Tahsas 29) pour `G = 2026` → année éthiopienne **2018** → 7 janv. 2026.
-- **Meskel** (Meskerem 17) pour `G = 2026` → année éthiopienne **2019** → 27 sept. 2026.
+Example:
+- **Genna** (Tahsas 29) for `G = 2026` → Ethiopian year **2018** → 7 Jan 2026.
+- **Meskel** (Meskerem 17) for `G = 2026` → Ethiopian year **2019** → 27 Sep 2026.
 
-## Cas limites
+## Edge cases
 
-| Cas | Traitement |
+| Case | Handling |
 |---|---|
-| **Pagumē 6** (année bissextile) | `daysInEthiopianMonth(year,13)` renvoie 6 si `year mod 4 = 3`. |
-| **Décalage ±1 jour** autour des bissextiles grégoriennes | Émergent naturellement du JDN ; **aucun cas spécial**. |
-| **Fête à cheval sur le 31 déc.** | La résolution par année teste `G−8` et `G−7`. |
-| **Jeûne à cheval sur le Nouvel An grégorien** (Tsome Gena) | La fin (`endEthiopianDate`) est cherchée dans `G` puis `G+1`. |
-| **Modulo négatif** (années < 1) | `isEthiopianLeapYear` normalise le modulo. |
+| **Pagumē 6** (leap year) | `daysInEthiopianMonth(year,13)` returns 6 if `year mod 4 = 3`. |
+| **±1 day shift** around Gregorian leap years | Emerges naturally from the JDN; **no special case**. |
+| **Date near 31 Dec / 1 Jan skipping a year** | A recurring Ethiopian date falls 0 or 1 times per Gregorian year. When leap-year drift pushes it from 31 Dec of one year to 1 Jan of the next, it skips the intermediate year: the resolver returns `null` and callers skip it (it appears in the adjacent year). |
+| **Fast straddling the Gregorian New Year** (Tsome Gena) | The end (`endEthiopianDate`) is searched in `G` then `G+1`. |
+| **Negative modulo** (years < 1) | `isEthiopianLeapYear` normalizes the modulo. |
 
-## Tests attendus
+## Expected tests
 
-Voir `src/tests/conversion.test.ts`. Couverture :
+See `src/tests/conversion.test.ts`. Coverage:
 
-1. **Ancrages du Nouvel An** : Meskerem 1 EC 2016→2020 = 11/12 septembre correct.
-2. **Genna** en année normale (2018→7 janv.) et en année décalée (2016→8 janv.).
-3. **Round-trip exact** grégorien→éthiopien→grégorien sur ~30 000 jours.
-4. **Bissextilité** : `E mod 4 = 3` ; Pagumē 5/6 jours ; 12 mois à 30 jours.
-5. **Résolution par année** : bonne occurrence pour fêtes de janvier et de sept.
+1. **New Year anchors**: Meskerem 1 EC 2016→2020 = correct 11/12 September.
+2. **Genna** in a normal year (2018→7 Jan) and a shifted year (2016→8 Jan).
+3. **Exact round-trip** Gregorian→Ethiopian→Gregorian over ~30,000 days.
+4. **Leap years**: `E mod 4 = 3`; Pagumē 5/6 days; 12 months of 30 days.
+5. **Per-year resolution**: correct occurrence for January and September feasts,
+   and `null` when the date skips a Gregorian year.
 
-Toutes ces assertions sont **vérifiées et passent** (`npm test`).
+All these assertions are **verified and passing** (`npm test`).
 
-## Fenêtre de validité
+## Validity window
 
-Fiable pour **1900–2099** (offset julien↔grégorien constant de 13 jours, utilisé
-par le comput pascal). Hors de cette plage, revoir `orthodox-rules.ts`.
+Reliable for **1900–2099** (constant 13-day Julian↔Gregorian offset, used by the
+paschal computus). Outside that range, revisit `orthodox-rules.ts`.

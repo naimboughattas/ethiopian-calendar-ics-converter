@@ -1,13 +1,13 @@
 import type { CalendarEventDefinition } from "@/types/event";
 
 /**
- * Événements CULTURELS et NATIONAUX.
+ * CULTURAL and NATIONAL events.
  *
- * - Les fêtes ancrées dans le calendrier éthiopien utilisent `ethiopianDate`
- *   (recalculées chaque année).
- * - Certains jours fériés civils sont légalement fixés dans le calendrier
- *   grégorien par l'État éthiopien (1er mai, 5 mai, 28 mai) : ils utilisent
- *   `gregorianFixed`. Voir docs/CALENDAR_RULES.md § « Jours fériés civils ».
+ * - Feasts anchored in the Ethiopian calendar use `ethiopianDate` (recomputed
+ *   each year).
+ * - Some civil holidays are legally fixed in the Gregorian calendar by the
+ *   Ethiopian state (1 May, 5 May, 28 May): they use `gregorianFixed`. See
+ *   docs/CALENDAR_RULES.md § "Civil holidays".
  */
 export const FIXED_CULTURAL_EVENTS: CalendarEventDefinition[] = [
   {
@@ -41,7 +41,7 @@ export const FIXED_CULTURAL_EVENTS: CalendarEventDefinition[] = [
     isMovable: false,
     isAllDay: true,
     ethiopianDate: { month: 6, day: 23 }, // Yekatit 23
-    note: "Fête nationale exprimée en date éthiopienne ; l'observance civile est le 2 mars grégorien.",
+    note: "National holiday expressed as an Ethiopian date; the civil observance is 2 March Gregorian.",
   },
   {
     id: "ashenda",
@@ -70,7 +70,7 @@ export const FIXED_CULTURAL_EVENTS: CalendarEventDefinition[] = [
     isMovable: false,
     isAllDay: true,
     gregorianFixed: { month: 5, day: 1 },
-    note: "Jour férié civil légalement fixé au 1er mai grégorien.",
+    note: "Civil holiday legally fixed to 1 May Gregorian.",
   },
   {
     id: "patriots-victory-day",
@@ -83,7 +83,7 @@ export const FIXED_CULTURAL_EVENTS: CalendarEventDefinition[] = [
     isMovable: false,
     isAllDay: true,
     gregorianFixed: { month: 5, day: 5 },
-    note: "Jour férié civil légalement fixé au 5 mai grégorien.",
+    note: "Civil holiday legally fixed to 5 May Gregorian.",
   },
   {
     id: "derg-downfall-day",
@@ -96,6 +96,6 @@ export const FIXED_CULTURAL_EVENTS: CalendarEventDefinition[] = [
     isMovable: false,
     isAllDay: true,
     gregorianFixed: { month: 5, day: 28 },
-    note: "Jour férié civil légalement fixé au 28 mai grégorien.",
+    note: "Civil holiday legally fixed to 28 May Gregorian.",
   },
 ];

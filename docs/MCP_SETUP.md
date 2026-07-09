@@ -1,48 +1,47 @@
-# Configuration MCP (Model Context Protocol)
+# MCP setup (Model Context Protocol)
 
-Les serveurs MCP étendent l'assistant de développement. Cette page documente
-ceux **recommandés** pour ce projet, leur rôle et une configuration type.
+MCP servers extend the development assistant. This page documents the ones
+**recommended** for this project, their role, and a sample configuration.
 
-> Les serveurs MCP se déclarent au niveau du client (Claude Code, IDE, etc.),
-> pas dans le code applicatif. Selon l'environnement, l'installation se fait via
-> `claude mcp add ...` ou l'UI des connecteurs. En session non interactive,
-> l'autorisation OAuth doit être faite au préalable.
+> MCP servers are declared at the client level (Claude Code, IDE, etc.), not in
+> the application code. Depending on the environment, installation is done via
+> `claude mcp add ...` or the connectors UI. In a non-interactive session, OAuth
+> authorization must be done beforehand.
 
-## Serveurs recommandés
+## Recommended servers
 
-### 1. `filesystem` — lecture/écriture des fichiers
+### 1. `filesystem` — reading/writing files
 
-Rôle : parcourir et éditer le dépôt (docs, `src/`, données d'événements).
-Usage projet : maintenir la doc, ajouter des définitions d'événements, refactorer.
+Role: browse and edit the repository (docs, `src/`, event data).
+Project use: maintain the docs, add event definitions, refactor.
 
-### 2. `git` — commits propres par étape
+### 2. `git` — clean commits per step
 
-Rôle : `status`, `diff`, `add`, `commit`, `log`.
-Usage projet : un commit par phase (voir ROADMAP), messages descriptifs, revue
-des diffs avant validation. Ce dépôt n'est pas encore initialisé (`git init`).
+Role: `status`, `diff`, `add`, `commit`, `log`.
+Project use: one commit per phase (see ROADMAP), descriptive messages, review of
+diffs before validation. The repository is already initialized and pushed to
+GitHub.
 
-### 3. `memory` / `project-context` — mémoire des décisions
+### 3. `memory` / `project-context` — decision memory
 
-Rôle : conserver les **règles calendaires** et **décisions d'architecture** entre
-sessions (époque JDN = 1 724 221, DTEND exclusif, décalage ±1 jour, etc.).
-Usage projet : éviter de re-dériver les constantes et de réintroduire des bugs
-déjà résolus.
+Role: keep the **calendar rules** and **architecture decisions** across sessions
+(JDN epoch = 1,724,221, exclusive DTEND, ±1 day shift, etc.).
+Project use: avoid re-deriving constants and re-introducing already-fixed bugs.
 
-### 4. `browser` / `search` (si disponible) — vérification des sources
+### 4. `browser` / `search` (if available) — source verification
 
-Rôle : vérifier dates liturgiques, bâhre hasab, règles pascales auprès de
-sources fiables.
-Usage projet : validation par `calendar-research-agent` avant d'ajouter/modifier
-une fête. **Toujours confirmer** les dates cultuelles auprès de sources
-ecclésiales.
+Role: verify liturgical dates, bāhre hasab, paschal rules against reliable
+sources.
+Project use: validation by `calendar-research-agent` before adding/modifying a
+feast. **Always confirm** liturgical dates against ecclesiastical sources.
 
-### 5. `test-runner` — exécution des tests
+### 5. `test-runner` — running the tests
 
-Rôle : lancer Vitest après chaque étape et remonter les échecs.
-Usage projet : `npm test` après toute modification de conversion ou de données.
-À défaut de serveur dédié, utiliser la commande directement.
+Role: run Vitest after each step and report failures.
+Project use: `npm test` after any change to conversion or data. In the absence
+of a dedicated server, use the command directly.
 
-## Exemple de configuration (`.mcp.json` / client)
+## Sample configuration (`.mcp.json` / client)
 
 ```jsonc
 {
@@ -63,14 +62,14 @@ Usage projet : `npm test` après toute modification de conversion ou de données
 }
 ```
 
-> Les noms de paquets ci-dessus sont indicatifs ; adaptez à ceux réellement
-> disponibles dans votre écosystème. `browser`/`search` et `test-runner`
-> dépendent de l'environnement.
+> The package names above are indicative; adapt them to those actually available
+> in your ecosystem. `browser`/`search` and `test-runner` depend on the
+> environment.
 
-## Bonnes pratiques
+## Best practices
 
-- **Séquencer** : recherche (browser) → documentation (filesystem) → code
+- **Sequence**: research (browser) → documentation (filesystem) → code
   (filesystem) → tests (test-runner) → commit (git).
-- **Persister** les décisions calendaires dans `memory` dès qu'elles sont prises.
-- **Ne jamais** committer une modification de règle calendaire sans mise à jour
-  correspondante de `docs/CALENDAR_RULES.md` (voir AGENTS.md `docs-agent`).
+- **Persist** calendar decisions in `memory` as soon as they are made.
+- **Never** commit a calendar-rule change without a matching update to
+  `docs/CALENDAR_RULES.md` (see AGENTS.md `docs-agent`).

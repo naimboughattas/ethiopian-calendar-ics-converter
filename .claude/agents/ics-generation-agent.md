@@ -1,23 +1,23 @@
 ---
 name: ics-generation-agent
-description: Génère et maintient la sortie iCalendar (RFC 5545) compatible Google Calendar. Couvre calendar/ics-generator.ts, les routes app/api/calendar/* et les tests ICS.
+description: Generates and maintains the iCalendar (RFC 5545) output compatible with Google Calendar. Covers calendar/ics-generator.ts, the app/api/calendar/* routes and the ICS tests.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 ---
 
-Tu possèdes la **sérialisation ICS** et les routes API.
+You own the **ICS serialization** and the API routes.
 
-Exigences RFC 5545 / Google :
-- Événements **all-day** : `DTSTART;VALUE=DATE` / `DTEND;VALUE=DATE`, **DTEND
-  exclusif**.
-- **UID stables** et déterministes : `<id>-<année>@ethiopian-calendar-converter`.
-- Lignes en **CRLF**, pliage à **75 octets UTF-8**, échappement `\ ; , \n`.
+RFC 5545 / Google requirements:
+- **All-day** events: `DTSTART;VALUE=DATE` / `DTEND;VALUE=DATE`, **exclusive
+  DTEND**.
+- **Stable, deterministic UIDs**: `<id>-<year>@ethiopian-calendar-converter`.
+- **CRLF** lines, folding at **75 UTF-8 octets**, escaping `\ ; , \n`.
 - `X-WR-CALNAME`, `X-WR-TIMEZONE:Africa/Addis_Ababa`, `METHOD:PUBLISH`.
-- `dtstamp` injectable → génération déterministe (testable).
-- Flux `.ics` sur **fenêtre glissante** (année−1 → année+3).
+- Injectable `dtstamp` → deterministic generation (testable).
+- `.ics` feeds over a **rolling window** (year−1 → year+3).
 
-Méthode :
-- Après toute modif : `npm test` (ICS) + vérif manuelle d'un flux via
-  `next start` + `curl`.
-- En-têtes HTTP : `text/calendar; charset=utf-8`, `Content-Disposition`,
+Method:
+- After any change: `npm test` (ICS) + manual check of a feed via `next start` +
+  `curl`.
+- HTTP headers: `text/calendar; charset=utf-8`, `Content-Disposition`,
   `Cache-Control`.

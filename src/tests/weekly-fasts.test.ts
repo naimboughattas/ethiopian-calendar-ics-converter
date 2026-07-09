@@ -7,25 +7,25 @@ import { generateWeeklyFasts } from "@/calendar/weekly-fasts";
 const WEDNESDAY = 2;
 const FRIDAY = 4;
 
-describe("jour de la semaine (JDN)", () => {
-  it("place correctement des dates de référence", () => {
-    // 1er janvier 2000 = samedi (5) ; 1er janvier 2026 = jeudi (3).
+describe("day of week (JDN)", () => {
+  it("places reference dates correctly", () => {
+    // 1 January 2000 = Saturday (5); 1 January 2026 = Thursday (3).
     expect(dayOfWeek(gregorianToJDN({ year: 2000, month: 1, day: 1 }))).toBe(5);
     expect(dayOfWeek(gregorianToJDN({ year: 2026, month: 1, day: 1 }))).toBe(3);
   });
 });
 
-describe("jeûnes hebdomadaires (mercredi/vendredi)", () => {
+describe("weekly fasts (Wednesday/Friday)", () => {
   const weekly = generateWeeklyFasts(2026, []);
 
-  it("ne produit que des mercredis et des vendredis", () => {
+  it("produces only Wednesdays and Fridays", () => {
     for (const ev of weekly) {
       const dow = dayOfWeek(gregorianToJDN(ev.start));
       expect(dow === WEDNESDAY || dow === FRIDAY).toBe(true);
     }
   });
 
-  it("exclut la fenêtre pascale (Fasika → Pentecôte, 50 jours)", () => {
+  it("excludes the paschal window (Fasika → Pentecost, 50 days)", () => {
     const fasika = gregorianToJDN(fasikaGregorian(2026));
     for (const ev of weekly) {
       const jdn = gregorianToJDN(ev.start);
@@ -34,8 +34,8 @@ describe("jeûnes hebdomadaires (mercredi/vendredi)", () => {
     }
   });
 
-  it("respecte les intervalles d'exclusion fournis", () => {
-    // Exclut toute la première quinzaine de mars 2026.
+  it("respects the provided exclusion intervals", () => {
+    // Exclude the whole first half of March 2026.
     const from = gregorianToJDN({ year: 2026, month: 3, day: 1 });
     const to = gregorianToJDN({ year: 2026, month: 3, day: 15 });
     const filtered = generateWeeklyFasts(2026, [
@@ -47,7 +47,7 @@ describe("jeûnes hebdomadaires (mercredi/vendredi)", () => {
     }
   });
 
-  it("génère des UID stables et déterministes par date", () => {
+  it("generates stable, deterministic UIDs per date", () => {
     const wed = weekly.find(
       (e) => dayOfWeek(gregorianToJDN(e.start)) === WEDNESDAY,
     )!;
@@ -59,35 +59,35 @@ describe("jeûnes hebdomadaires (mercredi/vendredi)", () => {
     );
   });
 
-  it("est déterministe (deux générations identiques)", () => {
+  it("is deterministic (two identical generations)", () => {
     expect(generateWeeklyFasts(2026, [])).toEqual(weekly);
   });
 });
 
-describe("intégration au moteur de résolution", () => {
-  it("n'ajoute rien sans l'option includeWeeklyFasts", () => {
+describe("integration with the resolution engine", () => {
+  it("adds nothing without the includeWeeklyFasts option", () => {
     const withoutWeekly = resolveEventsForYear(2026, ["fasting"]);
     expect(
       withoutWeekly.some((e) => e.definitionId.startsWith("weekly-fast")),
     ).toBe(false);
   });
 
-  it("ajoute les jeûnes hebdomadaires quand demandé", () => {
+  it("adds the weekly fasts when requested", () => {
     const withWeekly = resolveEventsForYear(2026, ["fasting"], {
       includeWeeklyFasts: true,
     });
     const weeklyCount = withWeekly.filter((e) =>
       e.definitionId.startsWith("weekly-fast"),
     ).length;
-    // ~90 mercredis/vendredis hors fenêtre pascale, réduits par l'exclusion
-    // des grands jeûnes → une quarantaine de jours « ordinaires ».
+    // ~90 Wednesdays/Fridays outside the paschal window, reduced by the
+    // major-fast exclusion → about forty "ordinary" days.
     expect(weeklyCount).toBeGreaterThan(40);
     expect(weeklyCount).toBeLessThan(generateWeeklyFasts(2026, []).length);
   });
 
-  it("ne place pas de jeûne hebdomadaire sur une grande fête (jeûne levé)", () => {
-    // Genna 2026 (Tahsas 29) tombe le 7 janvier 2026, un mercredi : la fête
-    // lève le jeûne du mercredi, aucun événement `weekly-fast` ce jour-là.
+  it("does not place a weekly fast on a major feast (fast lifted)", () => {
+    // Genna 2026 (Tahsas 29) falls on 7 January 2026, a Wednesday: the feast
+    // lifts the Wednesday fast, so no `weekly-fast` event on that day.
     const withWeekly = resolveEventsForYear(2026, ["fasting"], {
       includeWeeklyFasts: true,
     });
@@ -101,7 +101,7 @@ describe("intégration au moteur de résolution", () => {
     expect(onGenna).toHaveLength(0);
   });
 
-  it("les jeûnes hebdomadaires ne recouvrent pas les grands jeûnes (anti-doublon)", () => {
+  it("weekly fasts do not overlap the major fasts (anti-duplicate)", () => {
     const withWeekly = resolveEventsForYear(2026, ["fasting"], {
       includeWeeklyFasts: true,
     });

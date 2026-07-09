@@ -1,9 +1,9 @@
 import type { CalendarEventDefinition } from "@/types/event";
 
 /**
- * Fêtes orthodoxes FIXES, exprimées en dates éthiopiennes (mois/jour).
- * Source de vérité = date éthiopienne. La date grégorienne est recalculée
- * chaque année par le moteur de résolution. Voir docs/ORTHODOX_RITES.md.
+ * FIXED Orthodox feasts, expressed as Ethiopian dates (month/day).
+ * Source of truth = the Ethiopian date. The Gregorian date is recomputed each
+ * year by the resolution engine. See docs/ORTHODOX_RITES.md.
  */
 export const FIXED_ORTHODOX_EVENTS: CalendarEventDefinition[] = [
   {

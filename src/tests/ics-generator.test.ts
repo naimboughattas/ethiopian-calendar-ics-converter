@@ -17,48 +17,48 @@ function build(year = 2026, categories?: undefined) {
   });
 }
 
-describe("structure iCalendar", () => {
+describe("iCalendar structure", () => {
   const ics = build();
 
-  it("possède l'enveloppe VCALENDAR", () => {
+  it("has the VCALENDAR envelope", () => {
     expect(ics).toContain("BEGIN:VCALENDAR");
     expect(ics).toContain("VERSION:2.0");
     expect(ics).toContain("END:VCALENDAR");
   });
 
-  it("déclare le fuseau Africa/Addis_Ababa", () => {
+  it("declares the Africa/Addis_Ababa time zone", () => {
     expect(ics).toContain("X-WR-TIMEZONE:Africa/Addis_Ababa");
   });
 
-  it("utilise des lignes terminées par CRLF", () => {
+  it("uses CRLF-terminated lines", () => {
     expect(ics.includes("\r\n")).toBe(true);
-    // Aucun LF non précédé de CR.
+    // No LF not preceded by CR.
     expect(/[^\r]\n/.test(ics)).toBe(false);
   });
 
-  it("émet des événements all-day avec VALUE=DATE et DTEND exclusif", () => {
+  it("emits all-day events with VALUE=DATE and an exclusive DTEND", () => {
     expect(ics).toMatch(/DTSTART;VALUE=DATE:\d{8}/);
     expect(ics).toMatch(/DTEND;VALUE=DATE:\d{8}/);
   });
 
-  it("inclut UID, DTSTAMP, SUMMARY et CATEGORIES par événement", () => {
+  it("includes UID, DTSTAMP, SUMMARY and CATEGORIES per event", () => {
     expect(ics).toContain("UID:genna-2026@ethiopian-calendar-converter");
     expect(ics).toContain(`DTSTAMP:${FIXED_STAMP}`);
     expect(ics).toMatch(/SUMMARY:/);
     expect(ics).toMatch(/CATEGORIES:/);
   });
 
-  it("est déterministe (deux générations identiques)", () => {
+  it("is deterministic (two identical generations)", () => {
     expect(build()).toBe(ics);
   });
 });
 
-describe("échappement et pliage", () => {
-  it("échappe les caractères spéciaux iCalendar", () => {
+describe("escaping and folding", () => {
+  it("escapes iCalendar special characters", () => {
     expect(escapeText("a;b,c\\d\ne")).toBe("a\\;b\\,c\\\\d\\ne");
   });
 
-  it("plie les lignes de plus de 75 octets avec continuation par espace", () => {
+  it("folds lines longer than 75 octets with a space continuation", () => {
     const long = `SUMMARY:${"x".repeat(100)}`;
     const folded = foldLine(long);
     expect(folded).toContain("\r\n ");
@@ -67,7 +67,7 @@ describe("échappement et pliage", () => {
     }
   });
 
-  it("ne plie pas les lignes courtes", () => {
+  it("does not fold short lines", () => {
     expect(foldLine("VERSION:2.0")).toBe("VERSION:2.0");
   });
 });
